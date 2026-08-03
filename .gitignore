@@ -1,0 +1,10 @@
+# Mac clutter
+.DS_Store
+._*
+
+# Nothing else — the photographs and content files must be committed,
+# because that is how the website and the editor share them.
+
+# Python leftovers
+__pycache__/
+*.pyc

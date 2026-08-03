@@ -1,0 +1,17 @@
+# How Netlify should publish this site.
+# There is no build step — the files are the website.
+
+[build]
+  publish = "."
+
+# Nothing on the preview address should reach a search engine. This whole
+# block comes out on the day we point nuptialdiaries.in at it.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"

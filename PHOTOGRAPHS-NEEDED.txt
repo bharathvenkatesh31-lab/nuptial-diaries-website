@@ -1,0 +1,92 @@
+PHOTOGRAPHS USED BY THE SITE
+============================================================
+
+These are the 36 photographs the new site shows, and where each one appears.
+
+You do NOT need this list to go live the first time — see the README. It is here
+for when you want the site to carry its own photographs instead of pulling them
+from the WordPress folder.
+
+WHEN YOU ARE READY:
+  1. Make a folder called  images  next to index.html
+  2. Put a photograph in it for every filename below, keeping the exact name
+     (or send me your own better versions and I will rename them to match)
+  3. Tell me, and I will repoint the whole site at that folder in one go
+
+Export them around 2000px on the long edge and about 250 KB each. The current
+ones average 643 KB, which is heavier than a wedding site needs.
+
+============================================================
+
+ 1. BAR00041.jpg
+    used on: Films page, Home page, Wedding albums (the wedding list)
+ 2. BAR00480-2.jpg
+    used on: Home page, The Studio page, Wedding albums (the wedding list)
+ 3. BAR03167.jpg
+    used on: Home page, Wedding albums (the wedding list)
+ 4. BAR03361.jpg
+    used on: Home page, Wedding albums (the wedding list)
+ 5. BAR03515.jpg
+    used on: Home page, Wedding albums (the wedding list)
+ 6. BAR03723.jpg
+    used on: Home page, Wedding albums (the wedding list)
+ 7. BAR04224.jpg
+    used on: Home page, Wedding albums (the wedding list)
+ 8. BAR04351.jpg
+    used on: Films page, Home page, Wedding albums (the wedding list)
+ 9. BAR04364.jpg
+    used on: Films page, Home page, The Studio page, Wedding albums (the wedding list)
+10. BAR04444-2.jpg
+    used on: Films page, Home page, Kind Words page, Wedding albums (the wedding list)
+11. BAR05815.jpg
+    used on: Home page, Wedding albums (the wedding list)
+12. BAR06272.jpg
+    used on: Films page, Home page, Wedding albums (the wedding list)
+13. BAR07691.jpg
+    used on: Films page, Home page, Wedding albums (the wedding list)
+14. BAR07852.jpg
+    used on: Home page, Wedding albums (the wedding list)
+15. BAR08234.jpg
+    used on: Home page, Wedding albums (the wedding list)
+16. BAR08530.jpg
+    used on: Films page, Get In Touch page, Home page, Wedding albums (the wedding list)
+17. BAR08860.jpg
+    used on: Home page, Wedding albums (the wedding list)
+18. BAR09680.jpg
+    used on: Films page, Home page, Wedding albums (the wedding list)
+19. BK-76.jpg
+    used on: Films page, Home page
+20. DSC0618-2.jpg
+    used on: Photography page, Wedding albums (the wedding list)
+21. DSC07573.jpg
+    used on: Films page, Home page, Wedding albums (the wedding list)
+22. DSC07919.jpg
+    used on: Home page, Wedding albums (the wedding list)
+23. DSC08598.jpg
+    used on: Films page, Home page, Wedding albums (the wedding list)
+24. DSC1557.jpg
+    used on: Films page, Home page, Wedding albums (the wedding list)
+25. Picsee-133.jpg
+    used on: Home page, Wedding albums (the wedding list)
+26. Picsee-196.jpg
+    used on: Home page, The Studio page, Wedding albums (the wedding list)
+27. Picsee-202-2.jpg
+    used on: Home page, The Studio page, Wedding albums (the wedding list)
+28. Picsee-222.jpg
+    used on: Wedding albums (the wedding list)
+29. Picsee-252.jpg
+    used on: Home page, Wedding albums (the wedding list)
+30. Picsee-32.jpg
+    used on: Home page, Wedding albums (the wedding list)
+31. Picsee-370-1.jpg
+    used on: Films page, Home page, Wedding albums (the wedding list)
+32. RS-ND-336.jpg
+    used on: Films page, Home page, Wedding albums (the wedding list)
+33. RS-ND-45-2.jpg
+    used on: Films page, Get In Touch page, Home page, Wedding albums (the wedding list)
+34. RS-ND-504.jpg
+    used on: Home page, Kind Words page, Wedding albums (the wedding list)
+35. RS-ND-506.jpg
+    used on: Wedding albums (the wedding list)
+36. Untitled-2-copy-scaled.jpg
+    used on: Album template, Films page, Home page, Photography page

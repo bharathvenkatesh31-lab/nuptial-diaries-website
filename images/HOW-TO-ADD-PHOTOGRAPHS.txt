@@ -1,0 +1,66 @@
+HOW TO ADD PHOTOGRAPHS
+======================================================================
+
+There are two kinds of photograph on this site, and they work differently.
+
+
+1. WEDDING ALBUMS          folder:  images/weddings/
+----------------------------------------------------------------------
+
+One folder per wedding. The folder name is the wedding's "slug" — short,
+lowercase, words joined by hyphens, no spaces:
+
+    images/weddings/riya-arjun/
+    images/weddings/meera-karthik/
+    images/weddings/anita-sam/
+
+Inside each folder, number the photographs from 01 upwards:
+
+    01.jpg  02.jpg  03.jpg  …  28.jpg
+
+  ► NUMBERING THEM IS ONE STEP ON A MAC.
+    Put the photos in the folder, select them all, right-click, choose
+    "Rename…", set Format to "Name and Index", leave the name blank and
+    start at 1. Finder numbers them for you.
+    (If it names them 1.jpg instead of 01.jpg, that still works — but keep
+    it consistent within a folder.)
+
+Then open  js/weddings.js  and add a block for the wedding:
+
+    {
+      slug:    "riya-arjun",          <- must match the folder name exactly
+      name:    "Riya & Arjun",
+      city:    "Bangalore",
+      date:    "March 2026",
+      excerpt: "One line for the Photography page.",
+      story:   "A paragraph for the top of their album page.",
+      photos:  28                     <- HOW MANY photos are in the folder
+    }
+
+That is it. You do not list the photographs one by one — you write down how
+many there are and the site works out the rest. The first photograph becomes
+the cover. If you want a different cover, add a line:
+
+      cover:   "images/weddings/riya-arjun/07.jpg",
+
+New weddings go at the TOP of the list. Everything else — the grid, the album
+page, the counts, the previous/next links — follows on its own.
+
+
+2. THE FIXED PHOTOGRAPHS        folder:  images/site/
+----------------------------------------------------------------------
+
+These are the ones that stay put: the big picture on the home page, the film
+stills, the picture behind "The Studio", and so on. They are not part of any
+album.
+
+See  PHOTOGRAPHS-NEEDED.txt  in the main folder for the list, or just tell me
+which photographs you want where and I will set them.
+
+
+EXPORTING
+----------------------------------------------------------------------
+
+About 2000 pixels on the long edge, saved at around 250 KB, is plenty for a
+website — it will look identical to a much larger file and load far faster on
+a phone. Always .jpg, always lowercase filenames.

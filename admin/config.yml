@@ -1,0 +1,119 @@
+# ==========================================================================
+# Album Studio — the editor that runs at /admin
+#
+# local_backend: true means it edits the files on this Mac directly, with no
+# accounts and nothing online. When we move to the real site this line is
+# swapped for the GitHub details and everything else stays the same.
+# ==========================================================================
+
+local_backend: true
+
+backend:
+  name: git-gateway
+  branch: main
+
+# --------------------------------------------------------------------------
+# WHERE PHOTOGRAPHS GO
+#
+# Photographs you upload go to Cloudinary, not into this folder. Upload the
+# full-size file straight off the camera — Cloudinary sends each visitor a
+# version sized for their screen, around 200 KB instead of 15 MB.
+#
+# Both values below are public and safe to have here.
+# The API Secret is not needed and must never be put in this file.
+# --------------------------------------------------------------------------
+
+media_library:
+  name: cloudinary
+  config:
+    cloud_name: jdvgizll
+    api_key: "399957757972511"
+    default_transformations:
+      - - fetch_format: auto     # sends a modern, smaller format
+          quality: auto          # squeezes it as far as it can go unnoticed
+          width: 2400            # never larger than any screen needs
+          crop: limit            # only ever shrinks, never crops
+
+# Only used if Cloudinary is ever switched off again.
+media_folder: "images/uploads"
+public_folder: "images/uploads"
+
+collections:
+
+  # ---------------------------------------------------------------- Settings
+  - name: "settings"
+    label: "Site settings"
+    files:
+      - name: "studio"
+        label: "Studio details"
+        file: "content/site.json"
+        description: "Your contact details and the words on the front page."
+        fields:
+          - { name: whatsapp, label: "WhatsApp number (91 then 10 digits, no spaces)", widget: string }
+          - { name: phoneDisplay, label: "Phone, shown on the page", widget: string }
+          - { name: email, label: "Email", widget: string }
+          - { name: city, label: "Based in", widget: string }
+
+          - label: "Front page — the big picture"
+            name: hero
+            widget: object
+            fields:
+              - { name: image, label: "Photograph", widget: image }
+              - { name: headline, label: "Headline", widget: string,
+                  hint: "Put the word you want in gold between *stars*, e.g. A Symphony of *Love* & Light" }
+              - { name: subline, label: "Line underneath", widget: string }
+
+          - label: "Front page — the statement"
+            name: statement
+            widget: object
+            fields:
+              - { name: line1, label: "First line", widget: string }
+              - { name: line2, label: "Second line", widget: string,
+                  hint: "Gold word between *stars*" }
+              - { name: leftImage, label: "Left photograph", widget: image }
+              - { name: rightImage, label: "Right photograph", widget: image }
+              - { name: body, label: "Paragraphs", widget: text }
+
+          - label: "Front page — the photo wall"
+            name: wall
+            widget: object
+            fields:
+              - { name: tileNumber, label: "Number on the white card", widget: string }
+              - { name: tileLine, label: "Words on the white card", widget: string }
+              - label: "Photographs"
+                name: photos
+                widget: list
+                label_singular: "Photograph"
+                summary: "{{fields.image}}"
+                hint: "Drag to reorder. The white card always sits in the middle of the wall."
+                fields:
+                  - { name: image, label: "Photograph", widget: image }
+                  - { name: blackAndWhite, label: "Show in black and white", widget: boolean, default: false, required: false }
+
+  # ---------------------------------------------------------------- Weddings
+  - name: "weddings"
+    label: "Weddings"
+    files:
+      - name: "list"
+        label: "All weddings"
+        file: "content/weddings.json"
+        description: "Every wedding album. Drag to reorder — the top one shows first."
+        fields:
+          - label: "Weddings"
+            name: weddings
+            widget: list
+            label_singular: "Wedding"
+            summary: "{{fields.name}} — {{fields.city}}"
+            fields:
+              - { name: name, label: "Couple", widget: string }
+              - { name: slug, label: "Web name", widget: string,
+                  hint: "lowercase, hyphens, no spaces — becomes the link, e.g. riya-arjun" }
+              - { name: city, label: "City", widget: string }
+              - { name: date, label: "Month and year", widget: string }
+              - { name: excerpt, label: "One line for the Photography page", widget: string }
+              - { name: story, label: "Their story", widget: text }
+              - { name: cover, label: "Cover photograph", widget: image }
+              - label: "Photographs"
+                name: photos
+                widget: list
+                field: { name: src, label: "Photograph", widget: image }

@@ -1,0 +1,80 @@
+{
+  "whatsapp": "+918618176499",
+  "phoneDisplay": "+918618176499",
+  "email": "info@nuptialdiaries.in",
+  "city": "Bangalore, India",
+  "hero": {
+    "image": "images/uploads/abi01696.jpg",
+    "headline": "A Symphony of *Love* & Light",
+    "subline": "Wedding Photography & Films  ·  Bangalore & Beyond"
+  },
+  "statement": {
+    "line1": "We photograph the day",
+    "line2": "as it *actually* happens.",
+    "leftImage": "images/uploads/abi09488.jpg",
+    "rightImage": "images/uploads/vin09311.jpg",
+    "body": "Nuptial Diaries photographs Indian weddings the way they actually happen — close, unhurried and without a shot list. We have worked across cities and traditions, and we have learned that the moments worth keeping are almost never the ones anybody posed for.\n\nLong before the day itself we spend time with your story, your families and the customs you keep, so that when it matters we already know where to stand. What we hand back is a considered edit — photographs and a film made to hold their own decades from now, long after the flowers and the fashions have dated."
+  },
+  "wall": {
+    "tileNumber": "No. 14",
+    "tileLine": "Frames we keep coming back to.",
+    "photos": [
+      {
+        "image": "https://nuptialdiaries.in/wp-content/uploads/2024/10/BAR00041.jpg",
+        "blackAndWhite": false
+      },
+      {
+        "image": "https://nuptialdiaries.in/wp-content/uploads/2024/10/Picsee-32.jpg",
+        "blackAndWhite": false
+      },
+      {
+        "image": "https://nuptialdiaries.in/wp-content/uploads/2024/10/RS-ND-336.jpg",
+        "blackAndWhite": true
+      },
+      {
+        "image": "https://nuptialdiaries.in/wp-content/uploads/2024/10/BAR08530.jpg",
+        "blackAndWhite": false
+      },
+      {
+        "image": "https://nuptialdiaries.in/wp-content/uploads/2024/10/DSC08598.jpg",
+        "blackAndWhite": true
+      },
+      {
+        "image": "https://nuptialdiaries.in/wp-content/uploads/2024/10/BAR09680.jpg",
+        "blackAndWhite": false
+      },
+      {
+        "image": "https://nuptialdiaries.in/wp-content/uploads/2024/10/DSC07919.jpg",
+        "blackAndWhite": false
+      },
+      {
+        "image": "https://nuptialdiaries.in/wp-content/uploads/2024/10/Picsee-252.jpg",
+        "blackAndWhite": false
+      },
+      {
+        "image": "https://nuptialdiaries.in/wp-content/uploads/2024/10/BAR04224.jpg",
+        "blackAndWhite": false
+      },
+      {
+        "image": "https://nuptialdiaries.in/wp-content/uploads/2024/10/DSC07573.jpg",
+        "blackAndWhite": true
+      },
+      {
+        "image": "https://nuptialdiaries.in/wp-content/uploads/2024/10/RS-ND-504.jpg",
+        "blackAndWhite": false
+      },
+      {
+        "image": "https://nuptialdiaries.in/wp-content/uploads/2024/10/Picsee-133.jpg",
+        "blackAndWhite": false
+      },
+      {
+        "image": "https://nuptialdiaries.in/wp-content/uploads/2024/10/BAR08860.jpg",
+        "blackAndWhite": true
+      },
+      {
+        "image": "https://nuptialdiaries.in/wp-content/uploads/2024/10/BAR07852.jpg",
+        "blackAndWhite": false
+      }
+    ]
+  }
+}

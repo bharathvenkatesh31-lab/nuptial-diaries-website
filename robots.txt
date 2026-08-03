@@ -1,0 +1,5 @@
+# While the site is being built, keep it out of Google entirely.
+# When we point nuptialdiaries.in at it, this file gets emptied so the
+# site can be found normally.
+User-agent: *
+Disallow: /
