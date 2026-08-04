@@ -6,11 +6,28 @@
 # swapped for the GitHub details and everything else stays the same.
 # ==========================================================================
 
+# --------------------------------------------------------------------------
+# WHO CAN EDIT
+#
+# On the live website, editing goes through GitHub — you sign in with your
+# GitHub account and your changes are saved there, which publishes the site.
+#
+# local_backend stays switched on as well. It only ever applies when the site
+# is running on your own Mac (via "Edit Website.command"), where it edits the
+# files directly and needs no login. The live site ignores it.
+#
+# The GitHub app's Client ID is Ov23liTsTRO6lO4P0lNU. It and the secret live
+# in Netlify's settings, not in this file.
+# --------------------------------------------------------------------------
+
 local_backend: true
 
 backend:
-  name: git-gateway
+  name: github
+  repo: bharathvenkatesh31-lab/nuptial-diaries-site
   branch: main
+  base_url: https://api.netlify.com
+  auth_endpoint: auth
 
 # --------------------------------------------------------------------------
 # WHERE PHOTOGRAPHS GO
