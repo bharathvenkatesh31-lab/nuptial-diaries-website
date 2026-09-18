@@ -40,18 +40,14 @@ backend:
 # The API Secret is not needed and must never be put in this file.
 # --------------------------------------------------------------------------
 
-media_library:
-  name: cloudinary
-  config:
-    cloud_name: jdvgizll
-    api_key: "399957757972511"
-    default_transformations:
-      - - fetch_format: auto     # sends a modern, smaller format
-          quality: auto          # squeezes it as far as it can go unnoticed
-          width: 2400            # never larger than any screen needs
-          crop: limit            # only ever shrinks, never crops
+# Photographs you upload go into the site itself, in images/uploads, exactly
+# like the 970 brought over from WordPress. One system, no outside account.
+#
+# There was a Cloudinary account here (cloud "jdvgizll") from the first build.
+# It is a real account, but nobody could confirm it was Bharath's — so it has
+# been taken out rather than risk uploading clients' photographs into storage
+# he does not control. If it does turn out to be his, it can go back.
 
-# Only used if Cloudinary is ever switched off again.
 media_folder: "images/uploads"
 public_folder: "images/uploads"
 
@@ -125,10 +121,26 @@ collections:
               - { name: name, label: "Couple", widget: string }
               - { name: slug, label: "Web name", widget: string,
                   hint: "lowercase, hyphens, no spaces — becomes the link, e.g. riya-arjun" }
-              - { name: city, label: "City", widget: string }
-              - { name: date, label: "Month and year", widget: string }
-              - { name: excerpt, label: "One line for the Photography page", widget: string }
-              - { name: story, label: "Their story", widget: text }
+              # A couple can have two albums: the wedding and the pre-wedding
+              # shoot. This is what tells them apart on the Photography page,
+              # and what keeps pre-wedding shoots out of the weddings count.
+              - { name: kind, label: "Which shoot is this?", widget: select, required: false,
+                  options: ["Wedding", "Pre-Wedding"],
+                  hint: "Leave empty for an ordinary wedding album." }
+              # The four below may be left empty. The albums brought over from the
+              # old site have no city, date or story recorded, so the album page
+              # simply leaves those lines out until you fill them in.
+              - { name: city, label: "City", widget: string, required: false,
+                  hint: "e.g. Bangalore. Leave empty if you would rather not say." }
+              - { name: date, label: "Month and year", widget: string, required: false,
+                  hint: "e.g. March 2024" }
+              - { name: excerpt, label: "One line for the Photography page", widget: string, required: false }
+              - { name: story, label: "Their story", widget: text, required: false,
+                  hint: "If you write a story here it replaces the couple's review on their album page." }
+              - { name: quote, label: "The couple's own words", widget: text, required: false,
+                  hint: "Their review, shown on the album page when there is no story." }
+              - { name: quoteBy, label: "Who said it", widget: string, required: false,
+                  hint: "e.g. Soniya & Karan" }
               - { name: cover, label: "Cover photograph", widget: image }
               - label: "Photographs"
                 name: photos

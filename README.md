@@ -90,15 +90,24 @@ keeps working as a link to your channel, so you can do them one at a time.
 
 ## About the photographs
 
-Every photo on this site is **your own work, loaded from your existing site**
-(`nuptialdiaries.in/wp-content/uploads/...`). That means it looks finished right now.
+Every photograph on this site is **your own work, and the site now carries its own
+copies**. Nothing is loaded from the old WordPress site any more, so you can take that
+site down, rebuild it or change hosts without breaking anything here.
 
-**But:** if you ever take down or rebuild the current WordPress site, these photos will
-break. When you're ready to switch over properly, tell me and I'll download your photos
-into an `images/` folder inside this project so the site is fully self-contained.
+All 970 photographs were brought over from your 31 WordPress portfolio entries, which
+merged into **26 weddings** (five couples had their album split across two entries).
+They live in `images/weddings/<couple>/`.
 
-To swap any single photo now, just change the web address in the `src="..."` part of the
-`<img>` tag.
+Each photograph is saved twice:
+
+- `images/weddings/<couple>/name.jpg` — up to 1800px, what opens when a photo is clicked
+- `images/weddings/<couple>/thumb/name.jpg` — up to 800px, what the grids show
+
+Grids load only the small copy, so an album of a hundred photographs still opens quickly.
+Your full-resolution originals were not touched — they are still on WordPress, and several
+are 10–16 MB, far too heavy to put on a web page.
+
+The page backgrounds and banners live separately in `images/site/`.
 
 ---
 
@@ -252,21 +261,18 @@ similar) with a **File Manager**. The site lives in a folder called `public_html
 1. **Back up first.** In the control panel, compress `public_html` into a zip and download
    it. If anything goes wrong you can put it straight back.
 2. Upload every file in this folder into `public_html`.
-3. Do **not** delete `wp-content` — see below.
+3. You can leave `wp-content` where it is — the new site does not need it, but it holds
+   your full-resolution originals, so back it up before ever removing it.
 
-### About the photographs — the one thing to be careful with
+### About the photographs
 
-The site currently loads its 36 photographs from
-`nuptialdiaries.in/wp-content/uploads/…`, where they already live.
+The site carries its own photographs now — all 970 of them, in `images/`. Upload that
+folder along with everything else and the site is complete on its own.
 
-**That means the first upload just works.** You are putting the new pages onto the same
-server the photographs are already on, so nothing needs moving. The only rule is: **leave
-the `wp-content` folder alone.** Delete it and every photograph on the site disappears.
-
-**When you want the site to carry its own photographs** — which is worth doing, because it
-means the site survives a host change or a WordPress clean-up — see
-`PHOTOGRAPHS-NEEDED.txt`. It lists all 36 by filename and tells you where each one appears.
-Put them in a folder called `images`, tell me, and I'll repoint the whole site in one go.
+Because of that, nothing here depends on `wp-content` any more. You can leave the old
+WordPress files in place or clear them out; either way this site keeps working. If you
+do clear them, **download a backup of `wp-content` first** — those are your
+full-resolution originals, and the copies here are web-sized.
 
 You can also send me better versions from your own originals. The ones on the site now
 average 643 KB each, which is heavier than it needs to be — around 250 KB would look

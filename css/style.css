@@ -422,11 +422,29 @@ h1, h2, h3, h4 {
 }
 .st-left img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; }
 
+/* The two photographs drift slowly inside their frames as the page scrolls,
+   each at its own rate, so the pair never moves as one flat block.
+
+   "scale" and "translate" are kept as separate properties on purpose: the drift
+   is written to --drift many times a second and must land instantly, while the
+   hover is a slow 1.8s ease. Were both packed into one "transform" they would
+   fight, and every scroll step would crawl along the hover's timing. */
 .st-left img, .st-right img {
+  scale: 1.26;                       /* headroom: the drift can only travel as far
+                                        as the photo overhangs its frame, so this
+                                        number is what makes the movement visible */
+  translate: 0 var(--drift, 0px);
   filter: grayscale(100%);
-  transition: transform 1.8s var(--ease), filter 1.8s var(--ease);
+  transition: scale 1.8s var(--ease), filter 1.8s var(--ease);
 }
-.st-left:hover img, .st-right:hover img { transform: scale(1.04); filter: grayscale(0%); }
+.st-left:hover img, .st-right:hover img { scale: 1.30; filter: grayscale(0%); }
+
+/* Holding still is the honest default: if the drift script never runs, --drift
+   stays 0 and the photographs simply sit there, correctly framed. */
+@media (prefers-reduced-motion: reduce) {
+  .st-left img, .st-right img { translate: none; scale: 1; }
+  .st-left:hover img, .st-right:hover img { scale: 1; }
+}
 
 /* --- Serif body column, set between the two photographs --- */
 .st-text {
@@ -536,13 +554,11 @@ h1, h2, h3, h4 {
   align-items: center;
   justify-content: center;
   text-align: center;
-  /* A leaf of the diary set into the wall — ivory and ruled, not a white
-     card carrying a slogan. */
+  /* A quiet ivory card set into the wall of photographs — no ruling, so it
+     reads as a pause rather than as a texture. */
   background: var(--ivory);
   padding: clamp(0.8rem, 1.6vw, 1.6rem);
   aspect-ratio: 1 / 1;
-  background-image: repeating-linear-gradient(
-    180deg, transparent 0 26px, rgba(16, 16, 16, 0.055) 26px 27px);
 }
 .mosaic-tile .no {
   font-family: var(--display);
@@ -705,6 +721,23 @@ h1, h2, h3, h4 {
   line-height: 1.85;
   margin: clamp(1.6rem, 3vw, 2.4rem) 0 0;
 }
+/* The couple's own words, where they wrote to us. */
+.album-quote {
+  font-style: italic;
+  border-left: 1px solid var(--gold);
+  padding-left: clamp(1.1rem, 2.4vw, 1.8rem);
+}
+.album-quote cite {
+  display: block;
+  margin-top: 1.4rem;
+  font-family: var(--sans, system-ui, sans-serif);
+  font-style: normal;
+  font-size: 0.66rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
 .album-cover { margin: clamp(2.5rem, 6vw, 4.5rem) 0 0; }
 .album-cover img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
 
@@ -998,6 +1031,72 @@ h1, h2, h3, h4 {
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: clamp(0.6rem, 1.4vw, 1.1rem);
 }
+/* ---- the contact sheet as film through a gate ------------------------------
+   The five-column grid above stays the fallback: if the script never runs, or
+   the visitor has asked for less motion, the frames simply sit still.
+
+   When it does run, the frames become one slow strip, packed tight. Nothing is
+   drawn on them; the frame in the gate is simply the one brought up to size, in
+   colour, while the rest run past it small and in black and white.
+
+   The strip does not carry a permanent gap wide enough for that. Instead the
+   frame in the gate grows a margin as it grows, so its neighbours are pushed
+   aside exactly when the room is needed and close back up afterwards. The
+   margin is the half-width the frame gains, less the gap already there. */
+.frames.is-gate { display: block; }
+
+.gate-window {
+  position: relative;
+  overflow: hidden;
+  /* Room above and below for the frame at full size, since the window clips. */
+  padding: clamp(84px, 8.4vw, 120px) 0;
+}
+
+.gate-track {
+  --frame-w: clamp(190px, 20vw, 280px);
+  --gap: clamp(8px, 1vw, 14px);
+  --big: 2.1;                       /* how far the frame in the gate opens up */
+  display: flex;
+  gap: var(--gap);
+  width: max-content;
+  align-items: center;
+  will-change: transform;
+  transition-property: transform;
+  transition-timing-function: var(--ease);
+}
+.gate-track > .frame { flex: 0 0 var(--frame-w); }
+
+/* Running past: full size, tight against its neighbours, black and white.
+   Written long so it outranks the reveal rule, which sets transform: none. */
+.sheet.is-in .gate-track > .frame {
+  transform: scale(1);
+  transform-origin: center center;
+  margin: 0;
+  /* --swap is set only while a pointer is moving the gate. Both the frame
+     letting go and the frame taking over must then run at the same speed, or
+     the strip shifts by an amount the script cannot cancel. */
+  transition: transform var(--swap, 450ms) var(--ease), margin var(--swap, 450ms) var(--ease);
+  transition-delay: 0s;
+}
+
+/* In the gate: opened up, in colour, with the strip parting around it. The
+   +6px is slack, so the two never quite touch. */
+.sheet.is-in .gate-track > .frame.in-gate {
+  transform: scale(var(--big));
+  margin: 0 calc((var(--big) - 1) * var(--frame-w) / 2 - var(--gap) + 6px);
+  z-index: 2;
+  transition-duration: var(--swap, 1200ms);   /* opening up, slowly */
+}
+.gate-track > .frame.in-gate img {
+  filter: grayscale(0%) contrast(1) brightness(1);
+}
+.gate-track > .frame.in-gate .n { color: var(--gold); }
+
+@media (prefers-reduced-motion: reduce) {
+  .gate-track { transition: none; }
+  .sheet.is-in .gate-track > .frame { transition: none; }
+}
+
 .frame {
   position: relative;
   display: block;
@@ -1131,13 +1230,6 @@ h1, h2, h3, h4 {
   letter-spacing: 0.02em;
   text-transform: uppercase;
   margin: 0.3em 0 0.34em;
-}
-.sc-place {
-  display: block;
-  font-size: 0.57rem;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  opacity: 0.85;
 }
 .story-card .play-dot {
   position: absolute;
@@ -1377,7 +1469,7 @@ h1, h2, h3, h4 {
 .embed-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 
 /* ---------- Testimonials ---------- */
-.quote-slider { position: relative; min-height: 320px; }
+.quote-slider { position: relative; min-height: 400px; }   /* room for the portraits */
 .quote {
   position: absolute; inset: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -1395,7 +1487,23 @@ h1, h2, h3, h4 {
   margin: 0;
   max-width: 26ch;
 }
+/* The couple's own face, from their own album, under their words. */
+.quote-face {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  object-fit: cover;
+  filter: grayscale(100%);
+  box-shadow: 0 0 0 1px rgba(169, 138, 87, 0.45);   /* a thin gold ring */
+  transition: filter 0.7s var(--ease);
+}
+.quote.is-active:hover .quote-face { filter: grayscale(0%); }
+
 .quote .who {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
   margin-top: 2rem;
   font-size: 0.66rem;
   letter-spacing: 0.3em;
@@ -1412,19 +1520,112 @@ h1, h2, h3, h4 {
 
 .tcard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: clamp(1.6rem, 3vw, 2.6rem);
+  align-items: start;          /* a short review must not stretch to match a long one */
 }
 .tcard {
   background: var(--white);
   padding: clamp(2rem, 3.5vw, 3rem);
   border: 1px solid rgba(16,16,16,0.06);
 }
-.tcard p { font-family: var(--serif); font-size: 1.12rem; line-height: 1.7; font-style: italic; margin: 0 0 1.6rem; }
-.tcard .who { font-size: 0.64rem; letter-spacing: 0.26em; text-transform: uppercase; color: var(--gold); }
+
+/* The opening lines, always visible. */
+.tcard-lead {
+  font-family: var(--serif);
+  font-size: 1.12rem;
+  line-height: 1.7;
+  font-style: italic;
+  margin: 0;
+}
+
+/* The rest of their words, revealed on ask. This is a <details> element, so it
+   opens and closes on its own — it keeps working even if JavaScript does not. */
+.tcard details { margin: 0; }
+.tcard summary {
+  display: block;             /* removes the default triangle in every browser */
+  cursor: pointer;
+  list-style: none;
+}
+.tcard summary::-webkit-details-marker { display: none; }
+.tcard summary:focus-visible { outline: 2px solid var(--gold); outline-offset: 6px; }
+
+.tcard-cue {
+  display: inline-block;
+  margin-top: 1.4rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--gold);
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 0.3rem;
+  transition: opacity 0.3s ease;
+}
+.tcard summary:hover .tcard-cue { opacity: 0.6; }
+.tcard .c-close,
+.tcard details[open] .c-open { display: none; }
+.tcard details[open] .c-close { display: inline; }
+
+.tcard-rest {
+  font-family: var(--serif);
+  font-size: 1.12rem;
+  line-height: 1.7;
+  font-style: italic;
+  margin: 1.1rem 0 0;
+}
+
+/* The signature: the couple's own faces, from their own album, beside their
+   name — so a review is visibly from someone rather than from nobody. */
+.tcard-sign {
+  display: flex;
+  align-items: center;
+  gap: 0.95rem;
+  margin-top: 1.8rem;
+}
+.tcard-face {
+  flex: 0 0 auto;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  object-fit: cover;
+  filter: grayscale(100%);
+  transition: filter 0.7s var(--ease);
+}
+.tcard:hover .tcard-face { filter: grayscale(0%); }
+.tcard-by { display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; }
+.tcard .who {
+  margin-top: 0;
+  font-size: 0.64rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+/* A quiet way through to the photographs of that same wedding. */
+.tcard-album {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 0;
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+.tcard-album i {
+  width: 1.6rem;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.3s ease;
+}
+.tcard-album:hover { color: var(--ink); }
+.tcard-album:hover i { width: 2.4rem; }
 
 /* ---------- Stats / marquee ---------- */
 .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 2.5rem; text-align: center; }
+
 .stat .n { font-family: var(--serif); font-size: clamp(2.4rem, 4.5vw, 3.6rem); color: var(--gold); line-height: 1; }
 .stat .l { font-size: 0.62rem; letter-spacing: 0.28em; text-transform: uppercase; margin-top: 0.9rem; color: var(--muted); }
 
@@ -1646,4 +1847,135 @@ h1, h2, h3, h4 {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
   .reveal { opacity: 1; transform: none; }
+}
+
+/* ==========================================================================
+   THE STUDIO — set as a diary
+   Photographs are tipped in slightly off-square, the way one is stuck into a
+   book, and the process runs down a single rule like entries down a page.
+   ========================================================================== */
+
+/* ---- a photograph tipped into the page ---- */
+.tipped {
+  margin: 0;
+  background: var(--white);
+  padding: clamp(8px, 1vw, 14px) clamp(8px, 1vw, 14px) 0;
+  box-shadow: 0 18px 44px rgba(16, 16, 16, 0.13);
+  /* the angle is kept under two degrees: enough to read as tipped in,
+     small enough that it never looks like a mistake */
+  transition: transform 0.9s var(--ease), box-shadow 0.9s var(--ease);
+}
+.tipped img { display: block; width: 100%; }
+.tipped figcaption {
+  padding: 0.85rem 0.2rem 0.9rem;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--muted);
+  text-align: center;
+}
+.tip-left  { transform: rotate(-1.5deg); }
+.tip-right { transform: rotate(1.5deg); }
+.tipped:hover { transform: rotate(0deg); box-shadow: 0 24px 60px rgba(16, 16, 16, 0.18); }
+
+/* ---- the two entries, deliberately different shapes ---- */
+.entry { display: grid; gap: clamp(2rem, 5vw, 4.5rem); align-items: center; }
+.entry-a { grid-template-columns: 1.15fr 0.85fr; }
+/* The second entry lays its photograph across the page and sets the words
+   directly beneath it, in the same measure — so the two read as one block
+   rather than a picture with text drifting off to one side. */
+.entry-b { grid-template-columns: 1fr; justify-items: center; }
+.entry-b .tipped {
+  --measure: min(100%, 780px);
+  width: var(--measure);
+  margin: 0 0 clamp(2.2rem, 4vw, 3.2rem);
+}
+.entry-b .entry-text { width: min(100%, 780px); }
+.entry-b .entry-text h2 { text-align: center; }
+
+/* Under a wide photograph the two paragraphs sit side by side, as a spread
+   would set them. Note this places one paragraph per column rather than using
+   CSS columns — those would split each paragraph into two stubby halves. */
+@media (min-width: 900px) {
+  .entry-b .entry-text {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: clamp(2rem, 4vw, 3.5rem);
+    align-items: start;
+  }
+  .entry-b .entry-text h2 { grid-column: 1 / -1; }
+  .entry-b .entry-text .body-copy { margin-top: 0; }
+}
+
+/* ---- the process, run down one rule ---- */
+.spine { list-style: none; margin: 0; padding: 0; position: relative; }
+.spine::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  width: 1px;
+  background: var(--gold);
+  opacity: 0.35;
+}
+.spine-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2.5rem, 6vw, 5rem);
+  align-items: center;
+  margin-bottom: clamp(3.5rem, 8vw, 7rem);
+}
+.spine-step:last-child { margin-bottom: 0; }
+
+/* odd steps: picture left, words right. even steps: the other way about. */
+.spine-step:nth-child(odd)  .tipped     { grid-column: 1; grid-row: 1; }
+.spine-step:nth-child(odd)  .spine-text { grid-column: 2; grid-row: 1; }
+.spine-step:nth-child(even) .tipped     { grid-column: 2; grid-row: 1; }
+.spine-step:nth-child(even) .spine-text { grid-column: 1; grid-row: 1; text-align: right; }
+
+.spine-no {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  width: 3.1rem;
+  height: 3.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--ivory);
+  box-shadow: 0 0 0 1px rgba(169, 138, 87, 0.45);
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--gold);
+}
+.spine-text h3 {
+  font-family: var(--serif);
+  font-size: clamp(1.3rem, 2.2vw, 1.75rem);
+  font-weight: 400;
+  margin: 0 0 0.9rem;
+}
+.spine-text p { margin: 0; color: var(--muted); line-height: 1.8; }
+
+@media (max-width: 860px) {
+  .entry-a { grid-template-columns: 1fr; }
+  .spine::before { left: 1.55rem; }
+  .spine-step { grid-template-columns: 1fr; gap: 1.6rem; padding-left: 4.6rem; }
+  /* These must match the specificity of the alternating rules above, or the
+     even steps keep their grid-column: 2 and the browser invents a second
+     column — which squeezes the words into a thread one word wide. */
+  .spine-step:nth-child(odd)  .tipped,
+  .spine-step:nth-child(even) .tipped { grid-column: 1; grid-row: 1; }
+  .spine-step:nth-child(odd)  .spine-text,
+  .spine-step:nth-child(even) .spine-text { grid-column: 1; grid-row: 2; text-align: left; }
+  .spine-no { left: 1.55rem; top: 0; transform: translate(-50%, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tipped, .tip-left, .tip-right { transform: none; }
 }

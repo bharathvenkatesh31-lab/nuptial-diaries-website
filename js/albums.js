@@ -43,6 +43,13 @@ function renderAlbums() {
     return all.length ? all[0] : "";
   }
 
+  /* Every photograph is saved twice: the display copy, and a small copy in a
+     "thumb" folder beside it. Grids show the small one and only load the big
+     one when a photograph is opened, so an album of eighty opens quickly. */
+  function thumbOf(src) {
+    return String(src).replace(/\/([^/]+)$/, "/thumb/$1");
+  }
+
   /* ------------------------------------------------ the Photography grid */
   const grid = document.querySelector("[data-albums]");
   if (grid) {
@@ -51,14 +58,20 @@ function renderAlbums() {
     } else {
       let html = '<div class="album-grid">';
       list.forEach((w) => {
+        /* City and date are shown once Bharath has written them in; until then
+           the line states the one thing we do know — how many photographs. */
+        /* A couple can have two albums — the wedding and the pre-wedding shoot.
+           Naming which is which is what keeps the pair apart on the grid. */
+        const place = [w.kind, w.city, w.date].filter(Boolean).join(" \u00b7 ");
+        const count = [w.kind, photosOf(w).length + " photographs"].filter(Boolean).join(" \u00b7 ");
         html +=
           '<a class="album-card" href="album.html?w=' + encodeURIComponent(w.slug) + '">' +
-            '<span class="shot"><img src="' + esc(coverOf(w)) + '" alt="' + esc(w.name) +
+            '<span class="shot"><img src="' + esc(thumbOf(coverOf(w))) + '" alt="' + esc(w.name) +
               ', photographed by Nuptial Diaries" loading="lazy"></span>' +
             '<span class="cap">' +
               '<span class="nm">' + esc(w.name) + '</span>' +
-              '<span class="wh">' + esc(w.city) + ' &middot; ' + esc(w.date) + '</span>' +
-              '<span class="ex">' + esc(w.excerpt) + '</span>' +
+              '<span class="wh">' + esc(place || count) + '</span>' +
+              (w.excerpt ? '<span class="ex">' + esc(w.excerpt) + '</span>' : '') +
               '<span class="more">Read more<i aria-hidden="true"></i></span>' +
             '</span>' +
           '</a>';
@@ -70,7 +83,13 @@ function renderAlbums() {
       const tally = document.querySelector("[data-tally]");
       if (tally) {
         const shots = list.reduce((n, w) => n + photosOf(w).length, 0);
-        tally.textContent = list.length + " weddings · " + shots + " photographs";
+        /* Pre-wedding shoots are counted separately — calling them weddings
+           would inflate the number of weddings shown here. */
+        const pre = list.filter((w) => w.kind === "Pre-Wedding").length;
+        const parts = [(list.length - pre) + " weddings"];
+        if (pre) parts.push(pre + " pre-wedding shoots");
+        parts.push(shots + " photographs");
+        tally.textContent = parts.join(" · ");
       }
     }
   }
@@ -94,9 +113,11 @@ function renderAlbums() {
       document.title = w.name + " — Nuptial Diaries";
 
       const pics = photosOf(w);
+      /* The small copy is what loads; data-full is what the viewer opens. */
       const shots = pics
         .map((src) =>
-          '<figure data-lightbox><img src="' + esc(src) +
+          '<figure data-lightbox><img src="' + esc(thumbOf(src)) +
+          '" data-full="' + esc(src) +
           '" alt="Photograph from the wedding of ' + esc(w.name) +
           '" loading="lazy"></figure>')
         .join("");
@@ -108,13 +129,26 @@ function renderAlbums() {
           : '<span class="none ' + cls + '"><span class="dir">' + dir +
             '</span><span class="ttl">&mdash;</span></span>';
 
+      /* Only the facts we actually have get printed. */
+      const meta = [w.kind, w.city, w.date, pics.length + " photographs"]
+        .filter(Boolean)
+        .map((x) => "<span>" + esc(x) + "</span>")
+        .join("");
+
+      /* Where the couple wrote to Bharath, their own words open the album. */
+      const words = w.story
+        ? '<p class="album-story">' + esc(w.story) + "</p>"
+        : w.quote
+          ? '<blockquote class="album-story album-quote">&ldquo;' + esc(w.quote) +
+            '&rdquo;<cite>' + esc(w.quoteBy || w.name) + "</cite></blockquote>"
+          : "";
+
       album.innerHTML =
         '<div class="wrap-narrow reveal">' +
           '<p class="folio"><span class="no">No. ' + String(i + 1).padStart(2, "0") + "</span> A Wedding Diary</p>" +
           '<h1 class="album-title">' + esc(w.name) + "</h1>" +
-          '<p class="album-meta"><span>' + esc(w.city) + "</span><span>" + esc(w.date) +
-            "</span><span>" + pics.length + " photographs</span></p>" +
-          '<p class="album-story">' + esc(w.story) + "</p>" +
+          '<p class="album-meta">' + meta + "</p>" +
+          words +
         "</div>" +
         '<div class="wrap" style="margin-top:clamp(2.5rem,6vw,4.5rem);">' +
           '<figure class="album-cover reveal" style="margin-top:0;">' +

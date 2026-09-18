@@ -84,19 +84,49 @@
   });
 
   function tileHtml(w) {
+    /* An empty number would still leave its bottom margin behind, so the span
+       is left out altogether unless there is something to put in it. */
     return '<h2 class="mosaic-tile">' +
-      '<span class="no">' + gold(w.tileNumber || "") + "</span>" +
+      (w.tileNumber ? '<span class="no">' + gold(w.tileNumber) + "</span>" : "") +
       '<span class="line">' + gold(w.tileLine || "") + "</span>" +
       '<span class="rule"></span></h2>';
   }
 
   /* ------------------------------------------------------------- weddings */
   const needsWeddings =
-    document.querySelector("[data-albums]") || document.querySelector("[data-album]");
+    document.querySelector("[data-albums]") ||
+    document.querySelector("[data-album]") ||
+    document.querySelector("[data-stat]");
 
   const weddings = needsWeddings
-    ? get("content/weddings.json").then((d) => (window.WEDDINGS = d.weddings || []))
+    ? get("content/weddings.json").then((d) => {
+        window.WEDDINGS = d.weddings || [];
+        fillStats(window.WEDDINGS);
+        return window.WEDDINGS;
+      })
     : Promise.resolve([]);
+
+  /* The home page's first two figures are counted from the albums themselves,
+     so they can never drift out of date as weddings are added. */
+  /* Nuptial Diaries has been photographing weddings since 2013. Working the
+     years out from that, rather than writing a number in, means the figure is
+     still right every January without anyone remembering to change it. */
+  const FIRST_YEAR = 2013;
+
+  function fillStats(list) {
+    const n = {
+      years: new Date().getFullYear() - FIRST_YEAR,
+      weddings: list.length,
+      photographs: list.reduce(
+        (t, w) => t + (Array.isArray(w.photos) ? w.photos.length : parseInt(w.photos, 10) || 0),
+        0
+      ),
+    };
+    document.querySelectorAll("[data-stat]").forEach((el) => {
+      const v = n[el.getAttribute("data-stat")];
+      if (typeof v === "number") el.textContent = v;
+    });
+  }
 
   /* Everything else waits for these, so nothing renders half-built. */
   window.CONTENT_READY = Promise.all([site, weddings]).catch((e) => {

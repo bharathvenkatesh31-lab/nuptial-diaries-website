@@ -15,7 +15,7 @@ const SITE = {
   city: "Bangalore, India",
   // ---------------------------------------------------------------------
 
-  instagram: "https://www.instagram.com/nuptial.diaries/",
+  instagram: "https://www.instagram.com/nuptialdiariesstudio/",
   facebook:  "https://www.facebook.com/profile.php?id=100076185429717",
   youtube:   "https://youtube.com/@nuptialdairies3567",
   pinterest: "https://pin.it/5DtgCrv0K"
@@ -108,10 +108,305 @@ function initReveal() {
         }
       });
     },
-    { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
+    /* threshold must stay at 0: a section taller than the window can never be
+       "12% visible", so any fraction here would leave long pages — the album
+       grid, above all — permanently blank. The negative bottom margin is what
+       holds the reveal back until the section has properly entered the view. */
+    { threshold: 0, rootMargin: "0px 0px -12% 0px" }
   );
 
   items.forEach((el) => io.observe(el));
+}
+
+/* ------------------------------------------ the contact sheet as a roll */
+/* Deals the frames into two rows that run in opposite directions, endlessly.
+   Left untouched — a plain five-column grid — if motion is unwanted or if this
+   never runs, which is why the grid, not the roll, is the CSS default. */
+function initRoll() {
+  const sheet = $(".frames");
+  if (!sheet || sheet.classList.contains("is-gate")) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const frames = $$(".frame", sheet);
+  if (frames.length < 4) return;
+
+  /* The beat of the thing. One frame is brought up to size and looked at,
+     then the roll moves on. */
+  const GROW = 1200;      /* the frame coming up to full size */
+  const HOLD = 1000;      /* how long it stays there */
+  const SHRINK = 450;     /* settling back into the strip */
+  const ADVANCE = 1000;   /* the roll pulling the next frame into the gate */
+  const SWAP = 420;       /* the strip re-parting around a frame under the pointer */
+
+  const count = frames.length;
+  sheet.classList.add("is-gate");
+  sheet.textContent = "";
+
+  const window_ = document.createElement("div");
+  window_.className = "gate-window";
+  const track = document.createElement("div");
+  track.className = "gate-track";
+
+  /* Three sets: one either side of the set being shown, so the gate always has
+     frames arriving from the right and leaving to the left, never a bare edge. */
+  for (let set = 0; set < 3; set++) {
+    frames.forEach((el) => {
+      const node = set === 1 ? el : el.cloneNode(true);
+      if (set !== 1) {
+        node.setAttribute("aria-hidden", "true");
+        node.setAttribute("tabindex", "-1");
+      }
+      /* Every frame gets its turn at full size, so the frames marked by hand as
+         picks — ringed and ticked — no longer mean anything here. */
+      node.classList.remove("pick");
+      const ring = node.querySelector(".ring");
+      if (ring) ring.remove();
+      const tick = node.querySelector(".tick");
+      if (tick) tick.remove();
+      track.appendChild(node);
+    });
+  }
+
+  window_.appendChild(track);
+  sheet.appendChild(window_);
+
+  const kids = Array.prototype.slice.call(track.children);
+  let index = count;            /* start in the middle set */
+  let timer = null;
+  let paused = false;
+  let restoreX = null;    /* where the track sat before a pointer took the gate */
+
+  /* How far the strip parts on each side of the frame in the gate. This mirrors
+     the margin the stylesheet puts on .in-gate; it has to be worked out rather
+     than read back, because the moment the class goes on, the margin is still
+     animating from nothing and the layout would report the old position. */
+  function partWidth(box) {
+    const cs = getComputedStyle(track);
+    const big = parseFloat(cs.getPropertyValue("--big")) || 1;
+    const gap = parseFloat(cs.columnGap) || 0;
+    return ((big - 1) * box.offsetWidth) / 2 - gap + 6;
+  }
+
+  /* Where the track must sit for frame i to be centred in the gate. Growing the
+     frame widens its own left margin, pushing it along the strip, so that shift
+     is taken off the track by the same amount, over the same time and with the
+     same easing. The two cancel and the frame appears to stay perfectly still
+     while its neighbours move aside. */
+  function xFor(i, opened) {
+    const box = kids[i];
+    const gateLeft = Math.round((window_.clientWidth - box.offsetWidth) / 2);
+    return gateLeft - box.offsetLeft - (opened ? partWidth(box) : 0);
+  }
+
+  let trackX = 0;
+
+  /* Where the track actually is, which during a transition is not where it is
+     heading. A pointer can arrive mid-slide, and compensating from the target
+     would hand back the rest of that slide all at once. */
+  function liveX() {
+    const m = getComputedStyle(track).transform;
+    if (!m || m === "none") return trackX;
+    const parts = m.slice(m.indexOf("(") + 1, -1).split(",");
+    const v = parseFloat(parts[parts.length - 2]);
+    return isNaN(v) ? trackX : v;
+  }
+
+  function slide(x, ms) {
+    trackX = x;
+    track.style.transitionDuration = (ms || 0) + "ms";
+    track.style.transform = "translate3d(" + Math.round(x) + "px, 0, 0)";
+  }
+
+  function place(i, ms) {
+    slide(xFor(i, kids[i].classList.contains("in-gate")), ms);
+  }
+
+  /* Two different things want to decide which frame is enlarged: the running
+     order, and the pointer. cycleGate is what the order wants; gateEl is what
+     is actually enlarged. The pointer wins while it is over the strip. */
+  let cycleGate = null;
+  let gateEl = null;
+
+  function showGate(el) {
+    if (gateEl === el) return;
+    if (gateEl) gateEl.classList.remove("in-gate");
+    gateEl = el;
+    if (el) el.classList.add("in-gate");
+  }
+
+  function mark(i, on) {
+    cycleGate = on ? kids[i] : null;
+    if (restoreX === null) showGate(cycleGate);   /* only if no pointer in charge */
+  }
+
+  function after(ms, fn) {
+    timer = setTimeout(function () {
+      if (paused) { timer = setTimeout(function () { after(0, fn); }, 200); return; }
+      fn();
+    }, ms);
+  }
+
+  /* bring it up to size -> hold -> let it settle -> pull the next one in */
+  function cycle() {
+    /* Both targets are worked out before the class changes anything. */
+    const opened = xFor(index, true);
+    const closed = xFor(index, false);
+
+    mark(index, true);
+    slide(opened, GROW);           /* hold it centred as the strip parts */
+    after(GROW + HOLD, function () {
+      mark(index, false);
+      slide(closed, SHRINK);       /* and as the strip closes back up */
+      after(SHRINK, function () {
+        index += 1;
+        /* Back to the middle set once a full pass is done. The frames either
+           side are identical, so the jump cannot be seen. */
+        if (index >= count * 2) {
+          place(index, ADVANCE);
+          after(ADVANCE, function () {
+            index = count;
+            place(index, 0);
+            cycle();
+          });
+          return;
+        }
+        place(index, ADVANCE);
+        after(ADVANCE, cycle);
+      });
+    });
+  }
+
+  function reset() { place(index, 0); }
+
+  window.addEventListener("resize", reset, { passive: true });
+  $$("img", sheet).forEach(function (img) {
+    if (!img.complete) img.addEventListener("load", reset, { once: true });
+  });
+
+  /* ---------------------------------------------------------------- hover
+     A pointer outranks the running order: whichever frame is under it takes
+     the gate, wherever it sits on the strip, and the order resumes from where
+     it left off once the pointer leaves. */
+  function giveGate(el) {
+    if (!el || el === gateEl) return;
+
+    /* Moving the gate moves the parting with it, which shifts the strip, so the
+       track is nudged the other way by the same amount over the same time —
+       leaving the frame under the pointer exactly where the pointer found it.
+
+       The margins in play are read as they stand rather than assumed to be
+       fully open: a pointer often arrives while a frame is still growing, and
+       taking the finished width on trust threw the strip sideways by 87px. */
+    const part = partWidth(el);
+    const openNow = parseFloat(getComputedStyle(el).marginLeft) || 0;
+    let shift = -(part - openNow);            /* this frame's own margin opening */
+
+    if (gateEl) {
+      const from = kids.indexOf(gateEl);
+      const to = kids.indexOf(el);
+      /* Only a frame earlier in the strip drags this one along as it closes. */
+      if (from < to) {
+        shift += 2 * (parseFloat(getComputedStyle(gateEl).marginLeft) || 0);
+      }
+    }
+
+    if (restoreX === null) restoreX = trackX;   /* the order's own position */
+    const base = liveX();                       /* but move from where it is */
+    track.style.setProperty("--swap", SWAP + "ms");
+    showGate(el);
+    slide(base + shift, SWAP);
+  }
+
+  function releaseGate() {
+    if (restoreX === null) return;          /* the pointer never took over */
+    showGate(cycleGate);
+    slide(restoreX, SWAP);
+    restoreX = null;
+    setTimeout(function () {
+      if (restoreX === null) track.style.removeProperty("--swap");
+    }, SWAP + 40);
+  }
+
+  kids.forEach(function (el) {
+    el.addEventListener("mouseenter", function () { giveGate(el); });
+  });
+
+  /* Hold everything while someone is reading a frame, so it can be clicked. */
+  window_.addEventListener("mouseenter", function () { paused = true; });
+  window_.addEventListener("mouseleave", function () { paused = false; releaseGate(); });
+  window_.addEventListener("focusin", function () { paused = true; });
+  window_.addEventListener("focusout", function () { paused = false; releaseGate(); });
+
+  place(index, 0);
+  after(600, cycle);
+}
+
+/* ------------------------------------------------- slow drift on the photos */
+/* Marked-up as data-drift="<rate>" on the frame. A positive rate rises as you
+   scroll down, a negative one sinks, so a pair given opposite rates pulls gently
+   apart. The frames already clip their contents, which is what makes this work. */
+function initDrift() {
+  const frames = $$("[data-drift]");
+  if (!frames.length) return;
+
+  /* Anyone who has asked their device for less motion gets none of this. */
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const items = frames
+    .map((el) => ({ el, img: $("img", el), rate: parseFloat(el.dataset.drift) || 0, room: 0 }))
+    .filter((it) => it.img && it.rate);
+  if (!items.length) return;
+
+  /* How far each photograph may move is not guessed — it is measured. The photo
+     is scaled up slightly, so it overhangs its frame; half of that overhang,
+     top and bottom, is the whole travel available. Nine tenths of it is used,
+     leaving a margin so a frame can never show an edge at any screen size. */
+  function measure() {
+    items.forEach((it) => {
+      const frame = it.el.getBoundingClientRect().height;
+      const photo = it.img.getBoundingClientRect().height;   /* scale included */
+      it.room = Math.max(0, (photo - frame) / 2) * 0.9;
+    });
+  }
+
+  let ticking = false;
+
+  function place() {
+    ticking = false;
+    const mid = window.innerHeight / 2;
+    items.forEach(({ el, img, rate, room }) => {
+      const box = el.getBoundingClientRect();
+      if (box.bottom < -200 || box.top > window.innerHeight + 200) return;  /* off-screen */
+
+      /* -1 while the frame is still below the fold, +1 once it has risen past. */
+      const progress = (mid - (box.top + box.height / 2)) / (mid + box.height / 2);
+      const clamped = Math.max(-1, Math.min(1, progress));
+      img.style.setProperty("--drift", (clamped * room * rate).toFixed(2) + "px");
+    });
+  }
+
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(place);
+  }
+
+  function onResize() {
+    measure();
+    onScroll();
+  }
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onResize, { passive: true });
+
+  /* Photographs arrive after the HTML does; re-measure once each has loaded,
+     or the travel would be worked out from a frame that was still empty. */
+  items.forEach((it) => {
+    if (!it.img.complete) it.img.addEventListener("load", onResize, { once: true });
+  });
+
+  measure();
+  place();
 }
 
 /* -------------------------------------------------------------- lightbox */
@@ -377,6 +672,8 @@ function startUp() {
   applySiteDetails();
   initHeader();
   initReveal();
+  initDrift();
+  initRoll();
   initLightbox();
   initReels();
   initQuotes();
