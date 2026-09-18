@@ -56,6 +56,8 @@ collections:
   # ---------------------------------------------------------------- Settings
   - name: "settings"
     label: "Site settings"
+    editor:
+      preview: false
     files:
       - name: "studio"
         label: "Studio details"
@@ -106,6 +108,11 @@ collections:
   # ---------------------------------------------------------------- Weddings
   - name: "weddings"
     label: "Weddings"
+    # The side preview cannot resolve the photograph paths — they are relative
+    # to the site, and the editor runs at /admin/ — so it drew a thousand
+    # broken images on every album. "Check for Preview" opens the real site.
+    editor:
+      preview: false
     files:
       - name: "list"
         label: "All weddings"
@@ -116,7 +123,9 @@ collections:
             name: weddings
             widget: list
             label_singular: "Wedding"
-            summary: "{{fields.name}} — {{fields.city}}"
+            # Without the kind, a couple's two albums are two identical lines,
+            # and with city empty on every album it just read "Name —".
+            summary: "{{fields.name}} · {{fields.kind}}"
             fields:
               - { name: name, label: "Couple", widget: string }
               - { name: slug, label: "Web name", widget: string,

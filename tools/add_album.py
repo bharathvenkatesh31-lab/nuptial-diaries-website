@@ -41,10 +41,12 @@ def run(source, couple, kind, city, date):
     if not names:
         return {"error": "None of those photographs could be read."}
 
+    # Paths start at the site root. Without the leading slash they resolve
+    # against /admin/ inside the editor, where every thumbnail then 404s.
     album = {"slug": slug, "name": couple, "kind": kind, "city": city, "date": date,
              "excerpt": "", "story": "",
-             "cover": f"images/weddings/{slug}/{names[0]}",
-             "photos": [f"images/weddings/{slug}/{n}" for n in names]}
+             "cover": f"/images/weddings/{slug}/{names[0]}",
+             "photos": [f"/images/weddings/{slug}/{n}" for n in names]}
     data["weddings"].insert(0, album)                # newest first, as the grid reads
     json.dump(data, open(DATA, "w"), indent=2, ensure_ascii=False)
     return {"slug": slug, "count": len(names), "failed": failed,

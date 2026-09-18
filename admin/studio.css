@@ -1,0 +1,210 @@
+/* ==========================================================================
+   Album Studio — the look of the editor itself
+
+   Decap CMS ships a serviceable grey-blue interface. This quiets it down in
+   the manner of Pixieset's dashboard: white, hairline borders instead of
+   shadows, generous spacing, one accent colour — the gold from the website,
+   so the tool feels like part of Nuptial Diaries rather than a product.
+
+   Decap builds its class names as css-<hash>-<ComponentName>. The hash moves
+   between releases, so everything here matches on the component name instead.
+   If a future release renames a component, that rule simply stops applying —
+   the editor keeps working, it just looks like Decap again.
+   ========================================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&display=swap");
+
+:root {
+  --as-bg:     #f6f5f2;
+  --as-card:   #ffffff;
+  --as-line:   #e7e4dd;
+  --as-ink:    #1c1b19;
+  --as-muted:  #8b877e;
+  --as-gold:   #a98a57;
+  --as-radius: 8px;
+}
+
+/* ---------- the page itself ---------- */
+body,
+#nc-root,
+[class*="AppMainContainer"] {
+  background: var(--as-bg) !important;
+  font-family: "Jost", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif !important;
+  color: var(--as-ink);
+}
+#nc-root * { font-family: inherit !important; }
+
+/* ---------- the bar across the top ---------- */
+/* Note the trailing hyphen: the bar's class is AppHeader-css, while the items
+   inside it are AppHeaderNavLink / AppHeaderButton. Matching plain "AppHeader"
+   drew a border under every one of them. */
+[class*="AppHeader-"] {
+  background: var(--as-card) !important;
+  border-bottom: 1px solid var(--as-line) !important;
+  box-shadow: none !important;
+}
+[class*="AppHeaderContent"] { padding: 0.55rem 1.4rem !important; }
+
+/* The studio's name, set where the product's name would otherwise sit. */
+[class*="AppHeaderContent"]::before {
+  content: "Album Studio";
+  font-size: 0.72rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--as-gold);
+  margin-right: 2rem;
+  white-space: nowrap;
+  align-self: center;
+}
+
+[class*="AppHeaderNavLink"],
+[class*="AppHeaderButton"] {
+  color: var(--as-muted) !important;
+  font-size: 0.78rem !important;
+  letter-spacing: 0.06em;
+  border-radius: 6px !important;
+}
+[class*="AppHeaderNavLink"]:hover,
+[class*="AppHeaderButton"]:hover { color: var(--as-ink) !important; background: var(--as-bg) !important; }
+
+/* ---------- cards: hairlines, not shadows ---------- */
+[class*="SidebarContainer"],
+[class*="CollectionTopContainer"],
+[class*="ListCard"],
+[class*="SettingsWrapper"] {
+  background: var(--as-card) !important;
+  border: 1px solid var(--as-line) !important;
+  border-radius: var(--as-radius) !important;
+  box-shadow: none !important;
+}
+
+[class*="SidebarHeading"],
+[class*="CollectionTopHeading"] {
+  font-size: 0.68rem !important;
+  letter-spacing: 0.24em !important;
+  text-transform: uppercase !important;
+  font-weight: 400 !important;
+  color: var(--as-muted) !important;
+}
+
+/* ---------- the list of things you can edit ---------- */
+[class*="SidebarNavLink"] {
+  color: var(--as-ink) !important;
+  border-left: 2px solid transparent !important;
+  border-radius: 0 !important;
+  font-size: 0.9rem !important;
+  padding: 0.6rem 1rem !important;
+}
+[class*="SidebarNavLink"]:hover { background: var(--as-bg) !important; }
+[class*="sidebarNavLinkActive"] {
+  background: var(--as-bg) !important;
+  border-left-color: var(--as-gold) !important;
+  color: var(--as-ink) !important;
+  font-weight: 500 !important;
+}
+
+[class*="ListCardLink"] { color: var(--as-ink) !important; }
+[class*="ListCard"]:hover { border-color: var(--as-gold) !important; }
+[class*="ListCardTitle"] { font-weight: 400 !important; }
+
+/* ---------- search ---------- */
+[class*="SearchContainer"],
+[class*="SearchInput"] {
+  background: var(--as-bg) !important;
+  border-radius: 6px !important;
+  border: 1px solid transparent !important;
+}
+[class*="SearchInput"]:focus { border-color: var(--as-gold) !important; outline: none !important; }
+
+/* ---------- icons ---------- */
+/* Decap's icons carry its own blue. They take the colour of their surroundings
+   instead, so nothing on screen argues with the gold. */
+[class*="IconWrapper"] { color: var(--as-muted) !important; }
+[class*="IconWrapper"] svg,
+[class*="IconWrapper"] svg path { fill: currentColor !important; }
+[class*="sidebarNavLinkActive"] [class*="IconWrapper"] { color: var(--as-gold) !important; }
+
+/* ---------- buttons ---------- */
+[class*="ViewControlsButton"] { color: var(--as-muted) !important; }
+
+/* ---------- the way in ---------- */
+[class*="StyledAuthenticationPage"] {
+  background: var(--as-bg) !important;
+}
+/* Decap's own logo, replaced with the studio's name. */
+[class*="DecapLogoIcon"] { display: none !important; }
+[class*="StyledAuthenticationPage"]::before {
+  content: "Album Studio";
+  display: block;
+  font-size: 1.6rem;
+  font-weight: 300;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--as-ink);
+  margin-bottom: 0.5rem;
+}
+[class*="StyledAuthenticationPage"]::after {
+  content: "Nuptial Diaries";
+  display: block;
+  order: 1;
+  font-size: 0.68rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--as-gold);
+  margin-top: 1.6rem;
+}
+[class*="LoginButton"] {
+  background: var(--as-ink) !important;
+  border-radius: 999px !important;
+  padding: 0.85rem 1.8rem !important;
+  font-size: 0.72rem !important;
+  letter-spacing: 0.2em !important;
+  text-transform: uppercase !important;
+  box-shadow: none !important;
+}
+[class*="LoginButton"]:hover { background: var(--as-gold) !important; }
+
+/* ---------- the rows in a list of albums ---------- */
+/* These are the list widget's own items, a different component from the cards
+   on the collection screen, so they need naming separately. */
+[class*="-ListItem"],
+[class*="SortableListItem"] {
+  background: var(--as-card) !important;
+  border: 1px solid var(--as-line) !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+  margin-bottom: 0.5rem !important;
+}
+[class*="-ListItem"]:hover { border-color: var(--as-gold) !important; }
+[class*="-TopBar"] {
+  background: transparent !important;
+  border-bottom: 1px solid var(--as-line) !important;
+  border-radius: 6px 6px 0 0 !important;
+}
+
+/* ---------- the editing screen ---------- */
+[class*="ToolbarContainer"] {
+  background: var(--as-card) !important;
+  border-bottom: 1px solid var(--as-line) !important;
+  box-shadow: none !important;
+}
+[class*="EditorContainer"] { background: var(--as-bg) !important; }
+[class*="ToolbarButton"] { border-radius: 6px !important; }
+
+/* ---------- form fields ---------- */
+[class*="ControlContainer"] label,
+[class*="FieldLabel"] {
+  font-size: 0.68rem !important;
+  letter-spacing: 0.16em !important;
+  text-transform: uppercase !important;
+  color: var(--as-muted) !important;
+}
+[class*="ControlContainer"] input,
+[class*="ControlContainer"] textarea,
+[class*="ControlContainer"] select {
+  border-radius: 6px !important;
+  border: 1px solid var(--as-line) !important;
+  background: var(--as-card) !important;
+}
+[class*="ControlContainer"] input:focus,
+[class*="ControlContainer"] textarea:focus { border-color: var(--as-gold) !important; outline: none !important; }
