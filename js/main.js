@@ -8,10 +8,11 @@
 const SITE = {
   // ---- CHANGE THESE FOUR ----------------------------------------------
   // WhatsApp number in international format: 91 = India, then the 10 digits.
-  // No plus sign, no spaces. Example: "919876543210"
-  whatsapp: "919876543210",
-  phoneDisplay: "+91 98765 43210",   // how the number is shown on the page
-  email: "hello@nuptialdiaries.in",
+  // No plus sign, no spaces. A number typed with spaces or a "+" is
+  // cleaned up automatically before it goes into a link.
+  whatsapp: "918618176499",
+  phoneDisplay: "+91 86181 76499",   // how the number is shown on the page
+  email: "info@nuptialdiaries.in",
   city: "Bangalore, India",
   // ---------------------------------------------------------------------
 
@@ -31,6 +32,11 @@ function applySiteDetails() {
      this file, which are only a fallback if that file cannot be read. */
   const live = Object.assign({}, SITE, window.SITE_CONTENT || {});
 
+  /* A number typed into the editor may arrive as "+91 86181 76499" or
+     "918618176499". Both tel: and wa.me want bare digits, so whatever is
+     entered is reduced to digits before it goes into a link. */
+  const digitsOnly = (n) => String(n || "").replace(/\D/g, "");
+
   $$("[data-site]").forEach((el) => {
     const key = el.dataset.site;
     const value = live[key];
@@ -41,9 +47,10 @@ function applySiteDetails() {
       if (el.tagName === "A") el.href = "mailto:" + value;
     } else if (key === "phoneDisplay") {
       el.textContent = value;
-      if (el.tagName === "A") el.href = "tel:+" + SITE.whatsapp;
+      /* live, not SITE — otherwise the page can show one number and dial another. */
+      if (el.tagName === "A") el.href = "tel:+" + digitsOnly(live.whatsapp);
     } else if (key === "whatsapp") {
-      el.href = "https://wa.me/" + value;
+      el.href = "https://wa.me/" + digitsOnly(value);
     } else {
       el.textContent = value;
     }
@@ -643,13 +650,13 @@ function initEnquiryForm() {
     ].join("\n");
 
     const live = Object.assign({}, SITE, window.SITE_CONTENT || {});
-    const url = `https://wa.me/${live.whatsapp}?text=${encodeURIComponent(message)}`;
+    const url = `https://wa.me/${String(live.whatsapp).replace(/\D/g, "")}?text=${encodeURIComponent(message)}`;
     const opened = window.open(url, "_blank", "noopener");
 
     if (opened) {
       setStatus(
         `Thank you, ${data.name.split(" ")[0]} — your enquiry is ready in WhatsApp in a new tab. ` +
-        `Press send there and it reaches us straight away. If the tab didn't open, write to ${SITE.email}.`,
+        `Press send there and it reaches us straight away. If the tab didn't open, write to ${live.email}.`,
         false
       );
       form.reset();
