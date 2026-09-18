@@ -24,7 +24,7 @@ local_backend: true
 
 backend:
   name: github
-  repo: bharathvenkatesh31-lab/nuptial-diaries-site
+  repo: bharathvenkatesh31-lab/nuptial-diaries-website
   branch: main
   base_url: https://api.netlify.com
   auth_endpoint: auth
