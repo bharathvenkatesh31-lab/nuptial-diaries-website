@@ -64,8 +64,17 @@ else:
     print("")
     print(f"   See it:  http://localhost:4173/album.html?w={r['slug']}")
     print("")
-    print("   It is on your Mac now. To put it on the live site,")
-    print("   double-click  Publish Changes.command")
 PY
+
+echo ""
+read -r -p "  Put it on the live site now? (y / n):  " PUBLISH
+if [ "$PUBLISH" = "y" ] || [ "$PUBLISH" = "Y" ]; then
+  echo ""
+  bash tools/publish.sh "Add the album for $COUPLE"
+else
+  echo ""
+  echo "  Left on this Mac. Double-click Publish Changes.command when you are ready."
+fi
+
 echo ""
 read -r -p "  Press return to close. " _
