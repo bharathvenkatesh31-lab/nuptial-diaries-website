@@ -239,3 +239,77 @@ body,
   border-radius: 6px !important;
   border: 1px solid var(--as-line) !important;
 }
+
+/* ==========================================================================
+   Photographs as a grid
+
+   An album's photographs are list items nested inside the album's own list
+   item — which is how they can be styled without touching the list of albums
+   itself. Laid out as inline blocks they wrap into a grid on their own, with
+   no need to find and style the container, which carries no class of its own.
+   ========================================================================== */
+[class*="-ListItem"] [class*="-ListItem"] {
+  display: inline-block !important;
+  width: 132px !important;
+  vertical-align: top !important;
+  margin: 0 8px 8px 0 !important;
+  position: relative;
+  border: 1px solid var(--as-line) !important;
+  border-radius: 6px !important;
+  overflow: hidden;
+}
+[class*="-ListItem"] [class*="-ListItem"]:hover { border-color: var(--as-gold) !important; }
+
+/* the picture fills its cell */
+[class*="-ListItem"] [class*="-ListItem"] [class*="ImageWrapper"] { padding: 0 !important; }
+[class*="-ListItem"] [class*="-ListItem"] [class*="StyledImage"],
+[class*="-ListItem"] [class*="-ListItem"] img {
+  width: 132px !important;
+  height: 92px !important;
+  object-fit: cover !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  display: block !important;
+}
+
+/* one "PHOTOGRAPH" label per cell, forty-five times over, says nothing */
+[class*="-ListItem"] [class*="-ListItem"] label,
+[class*="-ListItem"] [class*="-ListItem"] [class*="FieldLabel"],
+[class*="-ListItem"] [class*="-ListItem"] [class*="NestedObjectLabel"] { display: none !important; }
+
+/* the buttons wait until the pointer is on the picture */
+[class*="-ListItem"] [class*="-ListItem"] [class*="FileWidgetButton"],
+[class*="-ListItem"] [class*="-ListItem"] [class*="ImageWidget"] button {
+  display: none !important;
+}
+[class*="-ListItem"] [class*="-ListItem"]:hover [class*="FileWidgetButton"],
+[class*="-ListItem"] [class*="-ListItem"]:hover [class*="ImageWidget"] button {
+  display: inline-block !important;
+  font-size: 0.55rem !important;
+  padding: 0.25rem 0.5rem !important;
+  margin: 2px !important;
+}
+
+/* trim the padding the form would otherwise put round each field */
+[class*="-ListItem"] [class*="-ListItem"] [class*="ControlContainer"] { margin: 0 !important; padding: 0 !important; }
+
+/* The form wraps each field in unnamed divs carrying 16-20px of padding, which
+   inside a 132px cell leaves the picture nowhere to sit. Scoped to photograph
+   cells only, so the rest of the form keeps its spacing. */
+[class*="-ListItem"] [class*="-ListItem"] div,
+[class*="-ListItem"] [class*="-ListItem"] span {
+  padding: 0 !important;
+  margin: 0 !important;
+  width: auto !important;
+}
+[class*="-ListItem"] [class*="-ListItem"] [class*="ImageWrapper"] {
+  width: 132px !important;
+  height: 92px !important;
+  background: var(--as-bg) !important;
+}
+/* the handle and the remove cross, kept small above each picture */
+[class*="-ListItem"] [class*="-ListItem"] [class*="-TopBar"] {
+  padding: 2px 4px !important;
+  border-bottom: 0 !important;
+  min-height: 0 !important;
+}
