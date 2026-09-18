@@ -1,24 +1,6 @@
 {
   "weddings": [
     {
-      "slug": "endtoend-test",
-      "name": "Endtoend Test",
-      "kind": "Wedding",
-      "city": "Bangalore",
-      "date": "April 2026",
-      "excerpt": "",
-      "story": "",
-      "cover": "images/weddings/endtoend-test/01.jpg",
-      "photos": [
-        "images/weddings/endtoend-test/01.jpg",
-        "images/weddings/endtoend-test/02.jpg",
-        "images/weddings/endtoend-test/03.jpg",
-        "images/weddings/endtoend-test/04.jpg",
-        "images/weddings/endtoend-test/05.jpg",
-        "images/weddings/endtoend-test/06.jpg"
-      ]
-    },
-    {
       "slug": "rachita-akash",
       "name": "Rachita & Akash",
       "city": "",
