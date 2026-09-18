@@ -313,3 +313,48 @@ body,
   border-bottom: 0 !important;
   min-height: 0 !important;
 }
+
+/* ==========================================================================
+   The albums as a grid
+
+   "A list item not inside another list item" is an album; the ones nested
+   inside it are its photographs, already laid out as a contact sheet above.
+   ========================================================================== */
+[class*="-ListItem"]:not([class*="-ListItem"] *) {
+  display: inline-block !important;
+  width: 208px !important;
+  vertical-align: top !important;
+  margin: 0 10px 10px 0 !important;
+  overflow: hidden;
+}
+
+/* the album's own cover, put there by studio.js */
+[class*="-ListItem"]:not([class*="-ListItem"] *)[data-cover] [class*="NestedObjectLabel"] {
+  position: relative;
+  min-height: 132px !important;
+  display: flex !important;
+  align-items: flex-end !important;
+  padding: 0.6rem 0.7rem !important;
+  background-image: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.15) 45%, rgba(0,0,0,0) 70%), var(--cover) !important;
+  background-size: cover, cover !important;
+  background-position: center, center !important;
+  color: #fff !important;
+  font-size: 0.8rem !important;
+  line-height: 1.35 !important;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.5);
+}
+
+/* An album opened for editing goes back to full width, so the form inside it
+   is not squeezed into a 208px column. data-open is set by studio.js: every
+   row holds a ControlContainer whether open or shut, so asking the page
+   whether one exists marks all 31 as open. */
+[class*="-ListItem"]:not([class*="-ListItem"] *)[data-open] {
+  display: block !important;
+  width: auto !important;
+}
+[class*="-ListItem"]:not([class*="-ListItem"] *)[data-open] [class*="NestedObjectLabel"] {
+  min-height: 0 !important;
+  background-image: none !important;
+  color: var(--as-ink) !important;
+  text-shadow: none !important;
+}
