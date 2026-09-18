@@ -154,4 +154,8 @@ collections:
               - label: "Photographs"
                 name: photos
                 widget: list
+                # collapsed: false so every photograph shows as a picture. Left
+                # collapsed, each is a row reading only "Photograph", and an
+                # album of forty-five is forty-five rows to open one at a time.
+                collapsed: false
                 field: { name: src, label: "Photograph", widget: image }

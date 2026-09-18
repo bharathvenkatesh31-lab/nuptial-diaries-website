@@ -208,3 +208,34 @@ body,
 }
 [class*="ControlContainer"] input:focus,
 [class*="ControlContainer"] textarea:focus { border-color: var(--as-gold) !important; outline: none !important; }
+
+/* ---------- the labels on each album row ---------- */
+[class*="NestedObjectLabel"] {
+  background: var(--as-card) !important;
+  color: var(--as-ink) !important;
+  border-radius: 0 0 6px 6px !important;
+}
+
+/* ---------- the buttons on a photograph ---------- */
+/* Decap's own blue and red for choose / replace / remove. */
+[class*="ImageWidget"] button,
+[class*="FileWidgetButton"],
+[class*="FileWidgetButtonRemove"] {
+  border-radius: 999px !important;
+  font-size: 0.66rem !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+  border: 1px solid var(--as-line) !important;
+  background: var(--as-card) !important;
+  color: var(--as-muted) !important;
+  padding: 0.4rem 0.9rem !important;
+}
+[class*="FileWidgetButton"]:hover { color: var(--as-ink) !important; border-color: var(--as-gold) !important; }
+[class*="FileWidgetButtonRemove"] { color: #b4453c !important; }
+
+/* Photographs sit in a row that wraps, rather than one per line. */
+[class*="ImageWidget"] img,
+[class*="FileWidgetImage"] {
+  border-radius: 6px !important;
+  border: 1px solid var(--as-line) !important;
+}
