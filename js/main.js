@@ -13,7 +13,7 @@ const SITE = {
   whatsapp: "918618176499",
   phoneDisplay: "+91 86181 76499",   // how the number is shown on the page
   email: "info@nuptialdiaries.in",
-  city: "Bangalore, India",
+  city: "Bangalore & Hyderabad",
   // ---------------------------------------------------------------------
 
   instagram: "https://www.instagram.com/nuptialdiariesstudio/",
@@ -50,10 +50,16 @@ function applySiteDetails() {
       /* live, not SITE — otherwise the page can show one number and dial another. */
       if (el.tagName === "A") el.href = "tel:+" + digitsOnly(live.whatsapp);
     } else if (key === "whatsapp") {
-      el.href = "https://wa.me/" + digitsOnly(value);
+      el.href = "https://wa.me/" + digitsOnly(value) +
+        (el.dataset.waText ? "?text=" + encodeURIComponent(el.dataset.waText) : "");
     } else {
       el.textContent = value;
     }
+  });
+
+  // "Call us" buttons dial the same number shown everywhere else.
+  $$("[data-call]").forEach((el) => {
+    if (live.whatsapp) el.href = "tel:+" + digitsOnly(live.whatsapp);
   });
 
   $$("[data-social]").forEach((el) => {
@@ -583,6 +589,67 @@ function initFilms() {
   });
 }
 
+/* ------------------------------------------- films page: the theatre player */
+/* Any element with data-film opens the film over the page, Vimeo-style: dark
+   stage, the film playing, its title underneath and the other films below.
+   If anything fails, the element is an ordinary link and opens YouTube. */
+function initTheatre() {
+  const theatre = $(".vm-theatre");
+  if (!theatre) return;
+  // Lives directly under <body>, so no animated section around it can trap it.
+  document.body.appendChild(theatre);
+  const player = $(".vm-player", theatre);
+  const strip = $(".vm-strip", theatre);
+  const films = [];
+  $$(".home-film-plate[data-film], .vm-tile[data-film], .vm-poster[data-film]").forEach((el) => films.push(el.dataset));
+  let lastFocus = null;
+
+  function open(d) {
+    player.innerHTML =
+      `<iframe src="https://www.youtube.com/embed/${d.film}?autoplay=1&rel=0&modestbranding=1&playsinline=1"
+               title="${d.title} — a film by Nuptial Diaries"
+               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+               allowfullscreen></iframe>`;
+    $(".vm-ctitle", theatre).innerHTML = d.title;
+    $(".vm-cmeta", theatre).innerHTML = d.meta;
+    $(".vm-calbum", theatre).href = d.album;
+    strip.innerHTML = films
+      .filter((f) => f.film !== d.film)
+      .map((f) =>
+        `<button type="button" class="vm-mini" data-pick="${f.film}">` +
+          `<span class="vm-mini-img"><img src="${f.still}" alt=""></span>` +
+          `<span class="vm-mini-t">${f.title}</span><span class="vm-mini-m">${f.meta}</span></button>`)
+      .join("");
+    // On a page with a single film there is nothing to offer next.
+    $(".vm-next", theatre).hidden = !strip.children.length;
+    if (theatre.hidden) lastFocus = document.activeElement;
+    theatre.hidden = false;
+    document.body.classList.add("lb-open", "vm-locked");
+    $(".vm-close", theatre).focus();
+  }
+
+  function close() {
+    player.innerHTML = "";              // stops the film
+    theatre.hidden = true;
+    document.body.classList.remove("lb-open", "vm-locked");
+    if (lastFocus) lastFocus.focus();
+  }
+
+  $$("[data-film]").forEach((el) =>
+    el.addEventListener("click", (e) => {
+      e.preventDefault();
+      open(el.dataset);
+    })
+  );
+  strip.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-pick]");
+    if (b) open(films.find((f) => f.film === b.dataset.pick));
+  });
+  $(".vm-close", theatre).addEventListener("click", close);
+  theatre.addEventListener("click", (e) => { if (e.target === theatre) close(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !theatre.hidden) close(); });
+}
+
 /* ------------------------------------------------------------ enquiry form */
 function initEnquiryForm() {
   const form = $("#enquiry-form");
@@ -615,6 +682,10 @@ function initEnquiryForm() {
     let firstBad = null;
 
     $$("input, select, textarea", form).forEach((input) => {
+      if (input.type === "checkbox") {
+        if (input.checked) data[input.name] = (data[input.name] ? data[input.name] + ", " : "") + input.value;
+        return;
+      }
       data[input.name] = input.value.trim();
 
       let problem = "";
@@ -641,8 +712,9 @@ function initEnquiryForm() {
       "",
       `Name: ${data.name}`,
       `Phone: ${data.phone}`,
-      `Email: ${data.email}`,
+      `Email: ${data.email || "Not given"}`,
       `Wedding date: ${data.date || "Not decided yet"}`,
+      `Events: ${data.events || "Not mentioned"}`,
       `Location: ${data.location || "Not mentioned"}`,
       `Looking for: ${data.service || "Not mentioned"}`,
       "",
@@ -651,12 +723,16 @@ function initEnquiryForm() {
 
     const live = Object.assign({}, SITE, window.SITE_CONTENT || {});
     const url = `https://wa.me/${String(live.whatsapp).replace(/\D/g, "")}?text=${encodeURIComponent(message)}`;
-    const opened = window.open(url, "_blank", "noopener");
+    // "noopener" would make window.open always return null, which looked like a
+    // blocked tab; open normally and cut the link back to this page instead.
+    const opened = window.open(url, "_blank");
+    if (opened) { try { opened.opener = null; } catch (err) { /* nothing to do */ } }
 
     if (opened) {
       setStatus(
-        `Thank you, ${data.name.split(" ")[0]} — your enquiry is ready in WhatsApp in a new tab. ` +
-        `Press send there and it reaches us straight away. If the tab didn't open, write to ${live.email}.`,
+        `Thank you, ${data.name.split(" ")[0]} — your enquiry is ready in WhatsApp. ` +
+        `Press send there and it reaches us straight away; we'll reply personally on WhatsApp, usually within a day. ` +
+        `If WhatsApp didn't open, call us on ${live.phoneDisplay} or write to ${live.email}.`,
         false
       );
       form.reset();
@@ -674,6 +750,22 @@ function initEnquiryForm() {
   });
 }
 
+/* ------------------------------------------- WhatsApp button, every page */
+function initWhatsAppButton() {
+  if ($(".wa-float")) return;
+  const live = Object.assign({}, SITE, window.SITE_CONTENT || {});
+  const digits = String(live.whatsapp || "").replace(/\D/g, "");
+  if (!digits) return;
+  const msg = "Hi Nuptial Diaries! I'd like to check your availability for our wedding.";
+  const a = document.createElement("a");
+  a.className = "wa-float";
+  a.href = "https://wa.me/" + digits + "?text=" + encodeURIComponent(msg);
+  a.target = "_blank"; a.rel = "noopener";
+  a.setAttribute("aria-label", "Message us on WhatsApp");
+  a.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.79-1.47-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.21 3.08.15.2 2.1 3.2 5.08 4.49.71.31 1.27.49 1.7.63.71.23 1.36.2 1.88.12.57-.09 1.75-.72 2-1.41.25-.69.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35zM12.05 21.5h-.01a9.43 9.43 0 01-4.81-1.32l-.35-.2-3.57.94.95-3.48-.22-.36A9.41 9.41 0 012.6 12.05C2.6 6.84 6.84 2.6 12.05 2.6c2.52 0 4.9.99 6.68 2.77a9.38 9.38 0 012.76 6.68c0 5.21-4.24 9.45-9.44 9.45zM20.1 3.98A11.32 11.32 0 0012.05.65C5.77.65.65 5.77.65 12.05c0 2 .52 3.97 1.52 5.7L.55 23.6l6-1.57a11.38 11.38 0 005.5 1.4h.01c6.28 0 11.4-5.12 11.4-11.4 0-3.05-1.19-5.91-3.36-8.06z"/></svg><span>WhatsApp us</span>';
+  document.body.appendChild(a);
+}
+
 /* ------------------------------------------------------------------- boot */
 function startUp() {
   applySiteDetails();
@@ -683,9 +775,11 @@ function startUp() {
   initRoll();
   initLightbox();
   initReels();
+  initTheatre();
   initQuotes();
   initFilms();
   initEnquiryForm();
+  initWhatsAppButton();
 }
 
 document.addEventListener("DOMContentLoaded", () => {

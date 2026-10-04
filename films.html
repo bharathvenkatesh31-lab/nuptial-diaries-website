@@ -5,16 +5,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Wedding Films — Nuptial Diaries</title>
 <meta name="description" content="Wedding films by Nuptial Diaries — teasers, highlight reels and full-length wedding stories shot across India.">
+<!-- Sharing preview: what WhatsApp, Instagram and Facebook show when this page is shared.
+     BHARATH: on the day nuptialdiaries.in moves here, replace https://nuptialdiaries.netlify.app below with https://nuptialdiaries.in -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Nuptial Diaries">
+<meta property="og:title" content="Wedding Films — Nuptial Diaries">
+<meta property="og:description" content="Wedding films by Nuptial Diaries — teasers, highlight reels and full-length wedding stories shot across India.">
+<meta property="og:url" content="https://nuptialdiaries.netlify.app/films.html">
+<meta property="og:image" content="https://nuptialdiaries.netlify.app/images/site/share-films.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /Sharing preview -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=42">
+<link rel="stylesheet" href="css/style.css?v=68">
 </head>
-<body>
+<body class="films-page">
 <div class="grain" aria-hidden="true"></div>
 
 <!-- ============================ HEADER ============================ -->
-<header class="site-header">
+<header class="site-header over-hero">
   <a class="wordmark" href="index.html" aria-label="Nuptial Diaries, home">
     <span class="mark">ND</span>
     <span class="sub">Nuptial Diaries</span>
@@ -26,7 +38,7 @@
       <a href="about.html">The Studio</a>
       <a href="portfolio.html">Photography</a>
       <a href="films.html" aria-current="page">Films</a>
-      <a href="testimonials.html">Kind Words</a>
+      <a href="testimonials.html">Reviews</a>
       <a class="btn-gold" href="contact.html">Get In Touch<span class="arw" aria-hidden="true"></span></a>
     </nav>
 
@@ -45,112 +57,152 @@
 
 <main>
 
-<section class="section screening">
+<!-- BHARATH: the films page works like a screening room. The big film at the
+     top is the one you most want couples to see. Each film needs its YouTube ID
+     (data-film and the link), its still, the couple's name and its running time. -->
 
-<!-- BHARATH: three programmes, all built the same way. Change each <h3> to the
-     couple's name and each .meta to the real length. Put the YouTube video ID
-     inside data-video="" to make a film play here instead of opening YouTube. -->
-
-  <div class="strip-block">
-    <div class="wrap">
-      <div class="screen-head reveal">
-        <div>
-          <p class="folio"><span class="no">No. 01</span> Films</p>
-          <h2 class="entry-title">A photograph stops the day. A film lets it <em>keep going</em>.</h2>
-        </div>
-        <div style="display:flex;align-items:flex-end;gap:clamp(1.2rem,3vw,2.4rem);">
-          <p class="bill">Full length<br>5 films</p>
-        <div class="reel-nav">
-          <button class="reel-prev" type="button" aria-label="Previous film">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
-          </button>
-          <button class="reel-next" type="button" aria-label="Next film">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
-          </button>
-        </div>
-        </div>
-      </div>
+<section class="vm-hero">
+  <img class="vm-hero-bg" src="images/films/xjirxkACElg-hero.jpg" alt="" aria-hidden="true">
+  <div class="vm-hero-inner">
+    <p class="vm-kicker"><span class="dot"></span> Featured film</p>
+    <h1 class="vm-title">Mahima &amp; Pradyumna</h1>
+    <p class="vm-meta">Full wedding film &middot; 8:47 &middot; Our most-watched film</p>
+    <div class="vm-actions">
+      <a class="vm-play" href="https://www.youtube.com/watch?v=xjirxkACElg" target="_blank" rel="noopener" data-film="xjirxkACElg" data-title="Mahima &amp; Pradyumna" data-meta="Full wedding film &middot; 8:47" data-album="album.html?w=mahima-pradyumna" data-still="images/films/xjirxkACElg.jpg">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Play film
+      </a>
+      <a class="vm-ghost" href="album.html?w=mahima-pradyumna">See their photographs</a>
     </div>
-
-    <div class="reels" aria-label="Films">
-      <div class="reel reveal">
-        <a class="plate" data-video="-2aOEXNhAPk" href="https://www.youtube.com/watch?v=-2aOEXNhAPk" target="_blank" rel="noopener" aria-label="Play the wedding film of Soniya &amp; Karan">
-          <img src="images/films/-2aOEXNhAPk.jpg" alt="Still from the wedding film of Soniya &amp; Karan" loading="lazy">
-          <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
-        </a>
-        <div class="cap">
-          <span class="no">No. 01</span>
-          <h3><a href="album.html?w=soniya-karan">Soniya &amp; Karan</a></h3>
-          <span class="meta">Wedding film &middot; Watch on YouTube</span>
-        </div>
-      </div>
-      <div class="reel reveal">
-        <a class="plate" data-video="elK5StoqwD4" href="https://www.youtube.com/watch?v=elK5StoqwD4" target="_blank" rel="noopener" aria-label="Play the wedding film of Eshita &amp; Jigar">
-          <img src="images/films/elK5StoqwD4.jpg" alt="Still from the wedding film of Eshita &amp; Jigar" loading="lazy">
-          <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
-        </a>
-        <div class="cap">
-          <span class="no">No. 02</span>
-          <h3><a href="album.html?w=eshita-jigar">Eshita &amp; Jigar</a></h3>
-          <span class="meta">Wedding film &middot; Watch on YouTube</span>
-        </div>
-      </div>
-      <div class="reel reveal">
-        <a class="plate" data-video="xjirxkACElg" href="https://www.youtube.com/watch?v=xjirxkACElg" target="_blank" rel="noopener" aria-label="Play the wedding film of Mahima &amp; Pradyumna">
-          <img src="images/films/xjirxkACElg.jpg" alt="Still from the wedding film of Mahima &amp; Pradyumna" loading="lazy">
-          <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
-        </a>
-        <div class="cap">
-          <span class="no">No. 03</span>
-          <h3><a href="album.html?w=mahima-pradyumna">Mahima &amp; Pradyumna</a></h3>
-          <span class="meta">Wedding film &middot; Watch on YouTube</span>
-        </div>
-      </div>
-      <div class="reel reveal">
-        <a class="plate" data-video="9XDa1Jfp21M" href="https://www.youtube.com/watch?v=9XDa1Jfp21M" target="_blank" rel="noopener" aria-label="Play the wedding film of Ramya &amp; Srinivas">
-          <img src="images/films/9XDa1Jfp21M.jpg" alt="Still from the wedding film of Ramya &amp; Srinivas" loading="lazy">
-          <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
-        </a>
-        <div class="cap">
-          <span class="no">No. 04</span>
-          <h3><a href="album.html?w=ramya-srinivas">Ramya &amp; Srinivas</a></h3>
-          <span class="meta">Wedding film &middot; Watch on YouTube</span>
-        </div>
-      </div>
-      <div class="reel reveal">
-        <a class="plate" data-video="HepVamLCtL0" href="https://www.youtube.com/watch?v=HepVamLCtL0" target="_blank" rel="noopener" aria-label="Play the wedding film of Ramya &amp; Suhas">
-          <img src="images/weddings/ramya-suhas/Picsee-353-1.jpg" alt="Still from the wedding film of Ramya &amp; Suhas" loading="lazy">
-          <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
-        </a>
-        <div class="cap">
-          <span class="no">No. 05</span>
-          <h3><a href="album.html?w=ramya-suhas">Ramya &amp; Suhas</a></h3>
-          <span class="meta">Wedding film &middot; Watch on YouTube</span>
-        </div>
-      </div>
-    </div>
-    <div class="reel-rail" aria-hidden="true"><i></i></div>
-  </div>
-
-</section>
-
-<section class="section on-deep">
-  <div class="wrap-narrow center reveal">
-    <p class="folio center"><span class="no">No. 02</span> On YouTube</p>
-    <p class="lede" style="max-width:46ch;margin:0 auto 2.4rem;">
-      Every film we have released lives on our channel &mdash; teasers, highlight reels
-      and full-length stories.
-    </p>
-    <a class="link-gold" data-social="youtube" href="#" target="_blank" rel="noopener">Visit our channel<i aria-hidden="true"></i></a>
   </div>
 </section>
 
-<section class="cta-band">
-  <img src="images/site/BK-76.jpg" alt="" aria-hidden="true" loading="lazy">
-  <div class="inner reveal">
-    <p class="eyebrow">Ready To Meet Us?</p>
-    <h2 class="display">Let's film your story</h2>
-    <a class="btn-gold" href="contact.html" style="margin-top: 2.4rem;">Enquire About Your Date<span class="arw" aria-hidden="true"></span></a>
+<section class="vm-library">
+  <div class="wrap">
+    <div class="vm-head reveal">
+      <div>
+        <p class="vm-kicker"><span class="dot"></span> Now showing</p>
+        <h2>Wedding films</h2>
+      </div>
+      <p>5 films &middot; tap a poster to watch it here &middot; <a class="vm-yt" data-social="youtube" href="#" target="_blank" rel="noopener">More on YouTube &rarr;</a></p>
+    </div>
+    <div class="vm-wall">
+      <a class="vm-poster reveal" href="https://www.youtube.com/watch?v=xjirxkACElg" target="_blank" rel="noopener" data-film="xjirxkACElg" data-title="Mahima &amp; Pradyumna" data-meta="Full wedding film &middot; 8:47" data-album="album.html?w=mahima-pradyumna" data-still="images/films/xjirxkACElg.jpg">
+        <img src="images/films/xjirxkACElg-hero.jpg" alt="From the wedding film of Mahima &amp; Pradyumna" loading="lazy" style="object-position:58% 50%">
+        <span class="vm-pdur">8:47</span>
+        <span class="vm-pplay" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+        <span class="vm-pcap">
+          <span class="vm-pno">No. 01</span>
+          <span class="vm-pname">Mahima &amp; Pradyumna</span>
+          <span class="vm-pkind">Full wedding film</span>
+        </span>
+      </a>
+      <a class="vm-poster reveal" href="https://www.youtube.com/watch?v=9XDa1Jfp21M" target="_blank" rel="noopener" data-film="9XDa1Jfp21M" data-title="Ramya &amp; Srinivas" data-meta="Wedding film &middot; 5:54" data-album="album.html?w=ramya-srinivas" data-still="images/films/9XDa1Jfp21M.jpg?v=2">
+        <img src="images/films/9XDa1Jfp21M.jpg?v=2" alt="From the wedding film of Ramya &amp; Srinivas" loading="lazy" style="object-position:34% 50%">
+        <span class="vm-pdur">5:54</span>
+        <span class="vm-pplay" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+        <span class="vm-pcap">
+          <span class="vm-pno">No. 02</span>
+          <span class="vm-pname">Ramya &amp; Srinivas</span>
+          <span class="vm-pkind">Wedding film</span>
+        </span>
+      </a>
+      <a class="vm-poster reveal" href="https://www.youtube.com/watch?v=elK5StoqwD4" target="_blank" rel="noopener" data-film="elK5StoqwD4" data-title="Eshita &amp; Jigar" data-meta="Wedding film &middot; 10:31" data-album="album.html?w=eshita-jigar" data-still="images/films/elK5StoqwD4.jpg">
+        <img src="images/films/elK5StoqwD4.jpg" alt="From the wedding film of Eshita &amp; Jigar" loading="lazy" style="object-position:58% 50%">
+        <span class="vm-pdur">10:31</span>
+        <span class="vm-pplay" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+        <span class="vm-pcap">
+          <span class="vm-pno">No. 03</span>
+          <span class="vm-pname">Eshita &amp; Jigar</span>
+          <span class="vm-pkind">Wedding film</span>
+        </span>
+      </a>
+      <a class="vm-poster reveal" href="https://www.youtube.com/watch?v=HepVamLCtL0" target="_blank" rel="noopener" data-film="HepVamLCtL0" data-title="Ramya &amp; Suhas" data-meta="Wedding film &middot; 8:39" data-album="album.html?w=ramya-suhas" data-still="images/weddings/ramya-suhas/Picsee-353-1.jpg">
+        <img src="images/weddings/ramya-suhas/Picsee-284-3.jpg" alt="From the wedding film of Ramya &amp; Suhas" loading="lazy" style="object-position:50% 30%">
+        <span class="vm-pdur">8:39</span>
+        <span class="vm-pplay" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+        <span class="vm-pcap">
+          <span class="vm-pno">No. 04</span>
+          <span class="vm-pname">Ramya &amp; Suhas</span>
+          <span class="vm-pkind">Wedding film</span>
+        </span>
+      </a>
+      <a class="vm-poster reveal" href="https://www.youtube.com/watch?v=-2aOEXNhAPk" target="_blank" rel="noopener" data-film="-2aOEXNhAPk" data-title="Soniya &amp; Karan" data-meta="Wedding film &middot; 19:24" data-album="album.html?w=soniya-karan" data-still="images/films/-2aOEXNhAPk.jpg">
+        <img src="images/films/-2aOEXNhAPk.jpg" alt="From the wedding film of Soniya &amp; Karan" loading="lazy" style="object-position:52% 50%">
+        <span class="vm-pdur">19:24</span>
+        <span class="vm-pplay" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+        <span class="vm-pcap">
+          <span class="vm-pno">No. 05</span>
+          <span class="vm-pname">Soniya &amp; Karan</span>
+          <span class="vm-pkind">Wedding film</span>
+        </span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- The theatre: opens over the page when a film is played. -->
+<div class="vm-theatre" hidden aria-modal="true" role="dialog" aria-label="Film player">
+  <button class="vm-close" type="button" aria-label="Close the film">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <div class="vm-stage">
+    <div class="vm-player"></div>
+    <div class="vm-caption">
+      <div>
+        <h2 class="vm-ctitle"></h2>
+        <p class="vm-cmeta"></p>
+      </div>
+      <a class="vm-calbum" href="#">See their photographs</a>
+    </div>
+    <div class="vm-next">
+      <p>More films</p>
+      <div class="vm-strip"></div>
+    </div>
+  </div>
+</div>
+
+<section class="vm-kinds">
+  <div class="wrap">
+    <div class="vm-head reveal">
+      <div>
+        <p class="vm-kicker"><span class="dot"></span> Your films</p>
+        <h2>What we film at your wedding</h2>
+      </div>
+      <p>Depending on your package, some or all of these</p>
+    </div>
+    <div class="vm-kgrid">
+      <div class="vm-kind reveal">
+        <span class="vm-kimg"><img src="images/weddings/eshita-jigar/BAR07573.jpg" alt="" loading="lazy"></span>
+        <span class="vm-klen">60&ndash;90<small>seconds</small></span>
+        <h3>The teaser</h3>
+        <p>The day in a minute and a half. The one you'll share with everyone.</p>
+      </div>
+      <div class="vm-kind reveal" data-delay="1">
+        <span class="vm-kimg"><img src="images/weddings/zunhera-zoheb/Picsee-ZZ-275.jpg" alt="" loading="lazy"></span>
+        <span class="vm-klen">6&ndash;8<small>minutes</small></span>
+        <h3>The candid film</h3>
+        <p>Your wedding told as a story, cut to music, the way you'll want to remember it.</p>
+      </div>
+      <div class="vm-kind reveal" data-delay="2">
+        <span class="vm-kimg"><img src="images/weddings/ramya-srinivas/VJR64105.jpg" alt="" loading="lazy"></span>
+        <span class="vm-klen">20&ndash;90<small>minutes</small></span>
+        <h3>The traditional video</h3>
+        <p>Every ritual, in full, for the family. Length depends on the coverage.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="vm-end">
+  <img class="vm-end-bg" src="images/site/BAR07852.jpg" alt="" aria-hidden="true" loading="lazy">
+  <div class="vm-end-inner reveal">
+    <p class="vm-kicker"><span class="dot"></span> Picturing your own film?</p>
+    <h2>Let's film your story</h2>
+    <p class="vm-end-line">Dates fill up quickly through wedding season. Tell us yours and we'll come back to you personally.</p>
+    <div class="vm-actions">
+      <a class="vm-play" href="contact.html">Check your date</a>
+      <a class="vm-ghost" data-site="whatsapp" data-wa-text="Hi Nuptial Diaries! I'd like to check your availability for our wedding." href="contact.html" target="_blank" rel="noopener">or message us on WhatsApp</a>
+    </div>
   </div>
 </section>
 
@@ -166,7 +218,7 @@
       </span>
       <p class="body-copy" style="font-size: 0.9rem; max-width: 34ch;">
         Wedding photography and films, made with patience and a great deal of care.
-        Based in <span data-site="city">Bangalore, India</span>, available worldwide.
+        Based in <span data-site="city">Bangalore &amp; Hyderabad</span>, available worldwide.
       </p>
     </div>
 
@@ -177,7 +229,7 @@
         <li><a href="about.html">The Studio</a></li>
         <li><a href="portfolio.html">Photography</a></li>
         <li><a href="films.html">Films</a></li>
-        <li><a href="testimonials.html">Kind Words</a></li>
+        <li><a href="testimonials.html">Reviews</a></li>
         <li><a href="contact.html">Get In Touch</a></li>
       </ul>
     </div>
@@ -200,11 +252,11 @@
 
   <div class="wrap footer-bottom">
     <span>&copy; <span data-year>2026</span> Nuptial Diaries. All rights reserved.</span>
-    <span>Bangalore, India</span>
+    <span>Bangalore &amp; Hyderabad</span>
   </div>
 </footer>
 
-<script src="js/content.js?v=42"></script>
-<script src="js/main.js?v=42"></script>
+<script src="js/content.js?v=45"></script>
+<script src="js/main.js?v=51"></script>
 </body>
 </html>

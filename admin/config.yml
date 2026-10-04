@@ -141,6 +141,8 @@ collections:
               # simply leaves those lines out until you fill them in.
               - { name: city, label: "City", widget: string, required: false,
                   hint: "e.g. Bangalore. Leave empty if you would rather not say." }
+              - { name: events, label: "Events covered", widget: string, required: false,
+                  hint: "Shown under the couple's name, e.g. Haldi to Reception, or Muhurtham & Reception." }
               - { name: date, label: "Month and year", widget: string, required: false,
                   hint: "e.g. March 2024" }
               - { name: excerpt, label: "One line for the Photography page", widget: string, required: false }
@@ -148,9 +150,14 @@ collections:
                   hint: "If you write a story here it replaces the couple's review on their album page." }
               - { name: quote, label: "The couple's own words", widget: text, required: false,
                   hint: "Their review, shown on the album page when there is no story." }
+              - { name: pull, label: "One line from their review", widget: string, required: false,
+                  hint: "Shown under the couple on the Photography page. Copy one short sentence from their review." }
               - { name: quoteBy, label: "Who said it", widget: string, required: false,
                   hint: "e.g. Soniya & Karan" }
               - { name: cover, label: "Cover photograph", widget: image }
+              - { name: previews, label: "Two small photos under the cover", widget: list, required: false,
+                  hint: "Pick two moments that show the rest of the day, e.g. a ritual and a family moment.",
+                  field: { name: src, label: "Photograph", widget: image } }
               - label: "Photographs"
                 name: photos
                 widget: list

@@ -72,8 +72,11 @@
         if (i === TILE_AT) cells.push(tileHtml(s.wall));
         cells.push(
           '<figure' + (p.blackAndWhite ? ' class="bw"' : "") + " data-lightbox>" +
-          '<img src="' + String(p.image).replace(/"/g, "&quot;") +
-          '" alt="Wedding photograph by Nuptial Diaries" loading="lazy"></figure>'
+          /* the wall loads an 800px thumbnail; the full photo opens in the viewer.
+             A photo added in the editor has no thumbnail yet, so it falls back to the full one. */
+          '<img src="' + esc(thumbPath(p.image)) + '" data-full="' + esc(p.image) +
+          '" onerror="this.onerror=null;this.src=this.dataset.full"' +
+          ' alt="Wedding photograph by Nuptial Diaries" loading="lazy"></figure>'
         );
       });
       if (s.wall.photos.length <= TILE_AT) cells.push(tileHtml(s.wall));
@@ -82,6 +85,9 @@
 
     return s;
   });
+
+  function esc(v) { return String(v).replace(/"/g, "&quot;"); }
+  function thumbPath(src) { return /^\/?images\/site\//.test(src) ? String(src).replace(/\/([^/]+)$/, "/thumb/$1") : src; }
 
   function tileHtml(w) {
     /* An empty number would still leave its bottom margin behind, so the span

@@ -1,6 +1,7 @@
 /* ==========================================================================
-   Builds the Photography grid and every album page from js/weddings.js.
-   BHARATH: you should not need to touch this file — edit weddings.js instead.
+   Builds the Photography page and every album page from content/weddings.json.
+   BHARATH: you should not need to touch this file. Edit the albums in /admin instead;
+   the order there is the order on the page, strongest first.
    ========================================================================== */
 
 /* Waits for js/content.js to fetch the wedding list, then draws. */
@@ -51,45 +52,100 @@ function renderAlbums() {
   }
 
   /* ------------------------------------------------ the Photography grid */
+  /* A pre-wedding shoot belongs to the couple's wedding when the names match.
+     The wedding album then carries both, so a couple sees the whole story. */
+  const isPre = (w) => w.kind === "Pre-Wedding";
+  const preOf = (w) => list.find((p) => isPre(p) && p.name === w.name);
+
+  /* Order on the page is the order in the editor: the strongest first. Only
+     the first few weddings show until the visitor asks for the rest. */
+  const FIRST_SHOWN = 8;
+
+  function card(w, n, small) {
+    const pre = !isPre(w) && preOf(w);
+    const where = [w.city, w.events || w.date].filter(Boolean).join(" · ");
+    /* Inside the pre-wedding section the heading already says what these are. */
+    const what = small ? "" : pre ? "Wedding & pre-wedding shoot" : "Wedding";
+    /* Two more moments under the cover, so the day shows without opening it. */
+    const minis = !small && Array.isArray(w.previews) && w.previews.length >= 2
+      ? '<span class="minis">' + w.previews.slice(0, 2).map((src) =>
+          '<span><img src="' + esc(thumbOf(src)) + '" alt="" loading="lazy"></span>').join("") + "</span>"
+      : "";
+    const line = where || what;
+    return (
+      '<a class="wcard' + (small ? " small" : "") + '" href="album.html?w=' + encodeURIComponent(w.slug) + '">' +
+        '<span class="shot"><img src="' + esc(thumbOf(coverOf(w))) + '" alt="' + esc(w.name) +
+          ', photographed by Nuptial Diaries" loading="lazy"></span>' +
+        minis +
+        '<span class="cap">' +
+          (small ? "" : '<span class="no">No. ' + String(n).padStart(2, "0") + "</span>") +
+          '<span class="nm">' + esc(w.name) + "</span>" +
+          (line ? '<span class="wh">' + esc(line) + "</span>" : "") +
+          (w.excerpt ? '<span class="ex">' + esc(w.excerpt) + "</span>" : "") +
+          (w.pull && !small ? '<span class="pull">&ldquo;' + esc(w.pull) + "&rdquo;</span>" : "") +
+          '<span class="more">View the album<i aria-hidden="true"></i></span>' +
+        "</span>" +
+      "</a>"
+    );
+  }
+
+  /* After a few weddings, a quiet invitation: the moment a couple has seen
+     enough is the moment to make it easy to ask. */
+  const ASK_AFTER = 4;
+  function ask() {
+    const live = Object.assign({}, typeof SITE !== "undefined" ? SITE : {}, window.SITE_CONTENT || {});
+    const digits = String(live.whatsapp || "").replace(/\D/g, "");
+    const wa = digits
+      ? '<a class="ask-wa" href="https://wa.me/' + digits + "?text=" +
+        encodeURIComponent("Hi Nuptial Diaries! I'd like to check your availability for our wedding.") +
+        '" target="_blank" rel="noopener">or message us on WhatsApp</a>'
+      : "";
+    return (
+      '<div class="wask">' +
+        '<p class="eyebrow">Picturing your own day?</p>' +
+        '<p class="wask-line">Dates fill up quickly through wedding season. Tell us yours and we’ll come back to you personally.</p>' +
+        '<a class="btn-gold" href="contact.html">Check your date<span class="arw" aria-hidden="true"></span></a>' +
+        wa +
+      "</div>"
+    );
+  }
+
   const grid = document.querySelector("[data-albums]");
   if (grid) {
     if (!list || !list.length) {
       problem(grid, "The wedding list could not be loaded.");
     } else {
-      let html = '<div class="album-grid">';
-      list.forEach((w) => {
-        /* City and date are shown once Bharath has written them in; until then
-           the line states the one thing we do know — how many photographs. */
-        /* A couple can have two albums — the wedding and the pre-wedding shoot.
-           Naming which is which is what keeps the pair apart on the grid. */
-        const place = [w.kind, w.city, w.date].filter(Boolean).join(" \u00b7 ");
-        const count = [w.kind, photosOf(w).length + " photographs"].filter(Boolean).join(" \u00b7 ");
-        html +=
-          '<a class="album-card" href="album.html?w=' + encodeURIComponent(w.slug) + '">' +
-            '<span class="shot"><img src="' + esc(thumbOf(coverOf(w))) + '" alt="' + esc(w.name) +
-              ', photographed by Nuptial Diaries" loading="lazy"></span>' +
-            '<span class="cap">' +
-              '<span class="nm">' + esc(w.name) + '</span>' +
-              '<span class="wh">' + esc(place || count) + '</span>' +
-              (w.excerpt ? '<span class="ex">' + esc(w.excerpt) + '</span>' : '') +
-              '<span class="more">Read more<i aria-hidden="true"></i></span>' +
-            '</span>' +
-          '</a>';
-      });
+      const weds = list.filter((w) => !isPre(w));
+      const pres = list.filter(isPre);
+      let html =
+        '<div class="wrap"><div class="wgrid">' +
+        weds.map((w, i) =>
+          card(w, i + 1).replace('class="wcard', 'class="wcard' + (i >= FIRST_SHOWN ? " later" : "")) +
+          (i === ASK_AFTER - 1 && weds.length > ASK_AFTER ? ask() : "")
+        ).join("") +
+        "</div>";
+      if (weds.length > FIRST_SHOWN) {
+        html += '<div class="center wmore"><button class="btn-line" type="button" data-show-all>See all ' +
+          weds.length + " weddings</button></div>";
+      }
       html += "</div>";
+      if (pres.length) {
+        html +=
+          '<div class="wrap pre-block">' +
+            '<p class="folio"><span class="no">No. 02</span> Before The Wedding</p>' +
+            '<h2 class="display-s">Pre-wedding shoots</h2>' +
+            '<p class="body-copy pre-intro">A relaxed day with just the two of you, somewhere that means something.</p>' +
+            '<div class="wgrid pre">' + pres.map((w) => card(w, 0, true)).join("") + "</div>" +
+          "</div>";
+      }
       grid.innerHTML = html;
 
-      /* Running totals in the intro. */
-      const tally = document.querySelector("[data-tally]");
-      if (tally) {
-        const shots = list.reduce((n, w) => n + photosOf(w).length, 0);
-        /* Pre-wedding shoots are counted separately — calling them weddings
-           would inflate the number of weddings shown here. */
-        const pre = list.filter((w) => w.kind === "Pre-Wedding").length;
-        const parts = [(list.length - pre) + " weddings"];
-        if (pre) parts.push(pre + " pre-wedding shoots");
-        parts.push(shots + " photographs");
-        tally.textContent = parts.join(" · ");
+      const more = grid.querySelector("[data-show-all]");
+      if (more) {
+        more.addEventListener("click", () => {
+          grid.querySelectorAll(".wcard.later").forEach((c) => c.classList.remove("later"));
+          more.parentNode.remove();
+        });
       }
     }
   }
@@ -108,19 +164,34 @@ function renderAlbums() {
       problem(album, "We could not find that wedding — it may have been renamed.");
     } else {
       const w = list[i];
-      const prev = list[i - 1];
-      const next = list[i + 1];
+      const same = list.filter((x) => (x.kind === "Pre-Wedding") === (list[i].kind === "Pre-Wedding"));
+      const j = same.indexOf(list[i]);
+      const prev = same[j - 1];
+      const next = same[j + 1];
       document.title = w.name + " — Nuptial Diaries";
 
       const pics = photosOf(w);
       /* The small copy is what loads; data-full is what the viewer opens. */
-      const shots = pics
-        .map((src) =>
+      const shotHtml = (src) =>
           '<figure data-lightbox><img src="' + esc(thumbOf(src)) +
           '" data-full="' + esc(src) +
           '" alt="Photograph from the wedding of ' + esc(w.name) +
-          '" loading="lazy"></figure>')
-        .join("");
+          '" loading="lazy"></figure>';
+      /* Halfway through a long album, a quiet invitation: it is the moment a
+         couple is most sure they want this for their own wedding. */
+      const half = pics.length > 12 ? Math.ceil(pics.length / 2) : pics.length;
+      const shotsA = pics.slice(0, half).map(shotHtml).join("");
+      const shotsB = pics.slice(half).map(shotHtml).join("");
+      const live = Object.assign({}, typeof SITE !== "undefined" ? SITE : {}, window.SITE_CONTENT || {});
+      const digits = String(live.whatsapp || "").replace(/\D/g, "");
+      const midAsk = shotsB
+        ? '<div class="wask album-ask reveal">' +
+            '<p class="eyebrow">Picturing your own day?</p>' +
+            '<p class="wask-line">Dates fill up quickly through wedding season. Tell us yours and we\u2019ll come back to you personally.</p>' +
+            '<a class="btn-gold" href="contact.html">Check your date<span class="arw" aria-hidden="true"></span></a>' +
+            (digits ? '<a class="ask-wa" href="https://wa.me/' + digits + "?text=" + encodeURIComponent("Hi Nuptial Diaries! I saw " + w.name + "\u2019s album and I\u2019d like to check your availability for our wedding.") + '" target="_blank" rel="noopener">or message us on WhatsApp</a>' : "") +
+          "</div>"
+        : "";
 
       const side = (item, dir, cls) =>
         item
@@ -130,18 +201,36 @@ function renderAlbums() {
             '</span><span class="ttl">&mdash;</span></span>';
 
       /* Only the facts we actually have get printed. */
-      const meta = [w.kind, w.city, w.date, pics.length + " photographs"]
+      const meta = [w.kind, w.city, w.events, w.date, pics.length + " photographs"]
         .filter(Boolean)
         .map((x) => "<span>" + esc(x) + "</span>")
         .join("");
 
       /* Where the couple wrote to Bharath, their own words open the album. */
+      /* A long review would push the photographs off the first screen, so
+         only its opening shows, with the rest a tap away. */
+      function shortened(text) {
+        const t = String(text).trim();
+        if (t.length <= 220) return esc(t);
+        const cut = t.slice(0, 200).replace(/\s+\S*$/, "");
+        return esc(cut) + '<span class="rest" hidden>' + esc(t.slice(cut.length)) + "</span>" +
+          '<button type="button" class="read-on" data-read-on>&hellip; read on</button>';
+      }
       const words = w.story
-        ? '<p class="album-story">' + esc(w.story) + "</p>"
+        ? '<p class="album-story">' + shortened(w.story) + "</p>"
         : w.quote
-          ? '<blockquote class="album-story album-quote">&ldquo;' + esc(w.quote) +
+          ? '<blockquote class="album-story album-quote">&ldquo;' + shortened(w.quote) +
             '&rdquo;<cite>' + esc(w.quoteBy || w.name) + "</cite></blockquote>"
           : "";
+
+      const pre = w.kind !== "Pre-Wedding" && list.find((p) => p.kind === "Pre-Wedding" && p.name === w.name);
+      const preShots = pre
+        ? '<div class="pre-in-album reveal"><p class="folio"><span class="no">Before</span> The Pre-Wedding Shoot</p>' +
+          '<div class="gallery">' + photosOf(pre).map((src) =>
+            '<figure data-lightbox><img src="' + esc(thumbOf(src)) + '" data-full="' + esc(src) +
+            '" alt="Pre-wedding photograph of ' + esc(w.name) + '" loading="lazy"></figure>').join("") +
+          "</div></div>"
+        : "";
 
       album.innerHTML =
         '<div class="wrap-narrow reveal">' +
@@ -154,11 +243,22 @@ function renderAlbums() {
           '<figure class="album-cover reveal" style="margin-top:0;">' +
             '<img src="' + esc(coverOf(w)) + '" alt="' + esc(w.name) + ', photographed by Nuptial Diaries">' +
           "</figure>" +
-          '<div class="gallery reveal" style="margin-top:clamp(2rem,4vw,3rem);">' + shots + "</div>" +
+          '<div class="gallery reveal" style="margin-top:clamp(2rem,4vw,3rem);">' + shotsA + "</div>" +
+          midAsk +
+          (shotsB ? '<div class="gallery reveal">' + shotsB + "</div>" : "") +
+          preShots +
           '<div class="album-nav" style="margin-top:clamp(2.5rem,5vw,4rem);">' +
             side(prev, "&#8592; Previous", "prev") + side(next, "Next &#8594;", "next") +
           "</div>" +
         "</div>";
+
+      const readOn = album.querySelector("[data-read-on]");
+      if (readOn) {
+        readOn.addEventListener("click", () => {
+          readOn.previousElementSibling.hidden = false;
+          readOn.remove();
+        });
+      }
     }
   }
 }

@@ -1979,3 +1979,688 @@ h1, h2, h3, h4 {
 @media (prefers-reduced-motion: reduce) {
   .tipped, .tip-left, .tip-right { transform: none; }
 }
+
+/* ---------- Hero call to action + WhatsApp button on every page ---------- */
+.hero-cta { margin-top: 1.9rem; }
+.wa-float {
+  position: fixed;
+  right: 18px;
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  z-index: 890;                 /* above the page, below the menu and the lightbox */
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  padding: 0.85rem 1.2rem 0.85rem 0.95rem;
+  border-radius: 999px;
+  background: var(--gold);
+  color: var(--white) !important;
+  font-size: 0.66rem; letter-spacing: 0.22em; text-transform: uppercase;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.28);
+  transition: transform 0.3s var(--ease), background 0.3s;
+}
+.wa-float:hover { background: var(--ink); transform: translateY(-2px); }
+.wa-float::after { display: none !important; }
+.wa-float svg { width: 20px; height: 20px; fill: currentColor; flex: none; }
+.menu-open .wa-float { display: none; }
+@media (max-width: 700px) {
+  .wa-float { padding: 0.95rem; }
+  .wa-float span { display: none; }
+  .wa-float svg { width: 24px; height: 24px; }
+}
+@media (prefers-reduced-motion: reduce) { .wa-float { transition: none; } }
+/* the WhatsApp button owns the bottom-right corner, so the scroll marker moves to the centre */
+.hero .scroll-cue { right: auto; left: 50%; transform: translateX(-50%); }
+
+/* ---------- Enquiry form: event chips ---------- */
+.field-label { font-size: 0.62rem; letter-spacing: 0.26em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.9rem; }
+.chips { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.chip { position: relative; cursor: pointer; }
+.chip input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.chip span { display: inline-block; padding: 0.55rem 1rem; border: 1px solid rgba(16,16,16,0.22); font-size: 0.86rem; font-weight: 300; color: var(--ink); transition: background 0.25s, border-color 0.25s, color 0.25s; }
+.chip input:checked + span { background: var(--gold); border-color: var(--gold); color: var(--white); }
+.chip input:focus-visible + span { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+/* ---------- FAQ ---------- */
+.faq { max-width: 780px; }
+.faq-list { margin-top: 2.8rem; border-top: 1px solid rgba(16,16,16,0.14); }
+.faq-item { border-bottom: 1px solid rgba(16,16,16,0.14); }
+.faq-item summary { list-style: none; cursor: pointer; padding: 1.4rem 2.4rem 1.4rem 0; position: relative; font-family: var(--serif); font-size: clamp(1.1rem, 2vw, 1.3rem); color: var(--ink); }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after { content: "+"; position: absolute; right: 0.2rem; top: 50%; transform: translateY(-50%); color: var(--gold); font-size: 1.5rem; font-family: var(--sans); font-weight: 300; transition: transform 0.3s; }
+.faq-item[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+.faq-item p { margin: 0 0 1.5rem; color: var(--muted); line-height: 1.75; max-width: 62ch; }
+
+/* ---------- Home: on-time promise ---------- */
+.promise { text-align: center; margin-top: 4rem; padding-top: 3rem; border-top: 1px solid rgba(16,16,16,0.12); }
+.promise-line { font-family: var(--serif); font-size: clamp(1.25rem, 2.6vw, 1.75rem); line-height: 1.45; max-width: 34ch; margin: 1rem auto 0; color: var(--ink); }
+.promise-line em { font-style: normal; color: var(--gold); }
+
+/* ==========================================================================
+   Photography page, redesigned: large photographs, no boxes, strongest first.
+   ========================================================================== */
+.albums-intro { max-width: 720px; margin-bottom: clamp(2.6rem, 5vw, 4.5rem); }
+.albums-intro .display-s { margin: 0.6rem 0 1.2rem; }
+
+.wgrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(3rem, 6vw, 5.5rem) clamp(1.6rem, 4vw, 4rem);
+}
+/* Every second wedding sits lower, so the page reads like a magazine spread. */
+.wgrid:not(.pre) .wcard:nth-child(even) { margin-top: clamp(4rem, 9vw, 8rem); }
+.wcard { display: block; color: var(--ink); }
+.wcard.later { display: none; }
+.wcard .shot { display: block; overflow: hidden; position: relative; }
+.wcard .shot img {
+  width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block;
+  transition: transform 1.6s var(--ease);
+}
+.wcard:hover .shot img { transform: scale(1.04); }
+.wcard .cap { display: block; padding-top: 1.3rem; }
+.wcard .no {
+  display: block; font-family: var(--serif); font-style: italic;
+  color: var(--gold); font-size: 1.05rem; margin-bottom: 0.35rem;
+}
+.wcard .nm {
+  display: block; font-family: var(--display); font-weight: 400;
+  font-size: clamp(1.6rem, 2.8vw, 2.3rem); line-height: 1.15;
+  transition: color 0.4s var(--ease);
+}
+.wcard:hover .nm { color: var(--gold); }
+.wcard .wh {
+  display: block; margin-top: 0.7rem; font-size: 0.6rem;
+  letter-spacing: 0.28em; text-transform: uppercase; color: var(--muted);
+}
+.wcard .ex {
+  display: block; margin-top: 0.8rem; font-family: var(--serif);
+  font-size: 1.05rem; line-height: 1.7; color: var(--ink-soft); max-width: 46ch;
+}
+.wcard .more {
+  display: inline-flex; align-items: center; gap: 0.6rem; margin-top: 1rem;
+  font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold);
+}
+.wcard .more i { display: block; width: 16px; height: 1px; background: var(--gold); transition: width 0.45s var(--ease); }
+.wcard:hover .more i { width: 30px; }
+
+.wmore { margin-top: clamp(3rem, 6vw, 5rem); }
+
+/* Pre-wedding shoots: a smaller set of their own, below the weddings. */
+.pre-block {
+  margin-top: clamp(5rem, 10vw, 8rem);
+  padding-top: clamp(3rem, 6vw, 5rem);
+  border-top: 1px solid rgba(16,16,16,0.12);
+}
+.pre-block .display-s { margin: 0.6rem 0 0.8rem; }
+.pre-intro { margin: 0 0 clamp(2rem, 4vw, 3rem); max-width: 52ch; }
+.wgrid.pre { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(2rem, 3vw, 2.8rem) clamp(1rem, 2vw, 1.8rem); }
+.wcard.small .nm { font-size: clamp(1.15rem, 1.6vw, 1.4rem); }
+.wcard.small .cap { padding-top: 0.9rem; }
+.wcard.small .more { display: none; }
+
+/* Album page: the pre-wedding shoot folded in, and the review's "read on". */
+.pre-in-album { margin-top: clamp(3.5rem, 7vw, 6rem); }
+.pre-in-album .gallery { margin-top: clamp(1.4rem, 3vw, 2.2rem); }
+.read-on {
+  font: inherit; font-style: normal; color: var(--gold); background: none;
+  border: 0; padding: 0; cursor: pointer; text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 1080px) {
+  .wgrid.pre { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 700px) {
+  .wgrid { grid-template-columns: 1fr; gap: 3.2rem; }
+  .wgrid:not(.pre) .wcard:nth-child(even) { margin-top: 0; }
+  .wgrid.pre { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem 1rem; }
+}
+
+/* ---------- Photography page, round two ---------- */
+/* A shorter banner, in colour, so the first wedding shows on the first screen. */
+.page-banner.short { height: 36svh; min-height: 250px; }
+.page-banner.in-colour img { filter: none; opacity: 0.78; }
+.albums-section.tight .albums-intro { margin-bottom: clamp(1.8rem, 3.5vw, 3rem); }
+.albums-section.tight .albums-intro .display-s { font-size: clamp(1.6rem, 3.4vw, 2.6rem); margin: 0.4rem 0 0.7rem; }
+
+/* The stagger counts couples only, so the invitation doesn't shift it. */
+.wgrid:not(.pre) .wcard:nth-child(even) { margin-top: 0; }
+.wgrid:not(.pre) .wcard:nth-of-type(even) { margin-top: clamp(4rem, 9vw, 8rem); }
+
+/* Two smaller moments under each cover. */
+.wcard .minis { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(0.4rem, 0.8vw, 0.7rem); margin-top: clamp(0.4rem, 0.8vw, 0.7rem); }
+.wcard .minis span { display: block; overflow: hidden; }
+.wcard .minis img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; display: block; transition: transform 1.6s var(--ease); }
+.wcard:hover .minis img { transform: scale(1.04); }
+
+/* The couple's own words, one line. */
+.wcard .pull {
+  display: block; margin-top: 0.9rem; max-width: 44ch;
+  font-family: var(--serif); font-style: italic; font-size: 1.08rem; line-height: 1.6; color: var(--ink-soft);
+}
+
+/* The invitation after the fourth wedding. */
+.wask {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: clamp(2.6rem, 6vw, 4.5rem) clamp(1rem, 4vw, 3rem);
+  border-top: 1px solid rgba(16,16,16,0.14);
+  border-bottom: 1px solid rgba(16,16,16,0.14);
+}
+.wask-line { font-family: var(--serif); font-size: clamp(1.2rem, 2.4vw, 1.6rem); line-height: 1.5; max-width: 36ch; margin: 0.9rem auto 1.8rem; }
+.ask-wa {
+  display: block; margin-top: 1.2rem; font-size: 0.62rem; letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--muted); text-decoration: underline; text-underline-offset: 4px;
+}
+.ask-wa:hover { color: var(--gold); }
+
+/* A smaller WhatsApp button on phones, so it covers less of the page. */
+@media (max-width: 700px) {
+  .wgrid:not(.pre) .wcard:nth-of-type(even) { margin-top: 0; }
+  .wa-float { padding: 0.75rem; right: 14px; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
+  .wa-float svg { width: 22px; height: 22px; }
+  .wgrid.pre { padding-right: 0; }
+  .wgrid.pre .wcard:nth-of-type(even) .cap { padding-right: 2.6rem; }
+}
+
+/* A soft shadow just below each cover, so the photographs lift off the page. */
+.wcard .shot,
+.wcard .minis span { box-shadow: 0 16px 26px -12px rgba(16, 16, 16, 0.38); }
+.wcard .shot { position: relative; z-index: 1; }
+
+/* ==========================================================================
+   Films page, redesigned: one big film, the rest in a grid, nothing sideways.
+   ========================================================================== */
+.screening .screen-head .bill { color: rgba(245, 242, 237, 0.62); }
+.feature-film .reel { margin: 0; }
+.film-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(2.6rem, 5vw, 4.2rem) clamp(1.4rem, 3vw, 2.6rem);
+  margin-top: clamp(3.5rem, 7vw, 6rem);
+}
+.film-grid .reel .plate { aspect-ratio: 16 / 9; }
+.film-grid .reel .cap h3 { font-size: clamp(1.15rem, 1.8vw, 1.55rem); }
+.feature-film .reel .cap h3 { font-size: clamp(1.5rem, 3vw, 2.4rem); }
+
+/* What a couple gets on film. */
+.film-includes { background: var(--ivory); }
+.includes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1.6rem, 3vw, 3rem);
+  margin-top: clamp(2.4rem, 5vw, 3.6rem);
+}
+.inc { border-top: 1px solid var(--gold); padding-top: 1.4rem; }
+.inc .len {
+  display: block; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold);
+}
+.inc h3 { font-family: var(--display); font-weight: 400; font-size: clamp(1.35rem, 2.2vw, 1.8rem); margin: 0.7rem 0 0.6rem; }
+.inc p { color: var(--muted); line-height: 1.75; margin: 0; max-width: 34ch; }
+
+@media (max-width: 700px) {
+  .feature-film .reel .plate, .film-grid .reel .plate { aspect-ratio: 16 / 9; }
+  .film-grid { grid-template-columns: 1fr; }
+  .includes { grid-template-columns: 1fr; }
+  .screening .reel .cap { grid-template-columns: auto 1fr; }
+  .screening .reel .cap .meta { grid-column: 2; text-align: left; margin-top: 0.35rem; }
+  .screen-head .bill { text-align: left; }
+}
+
+/* ==========================================================================
+   Films page — a screening room in the manner of Vimeo: one film filling the
+   screen, a clean library of thumbnails with running times, and a dark
+   theatre that opens over the page to play them.
+   ========================================================================== */
+.vm-hero {
+  position: relative;
+  min-height: 88svh;
+  display: flex; align-items: flex-end;
+  background: #0b0b0d; color: #fff;
+  overflow: hidden;
+}
+.vm-hero-bg {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  animation: vm-drift 24s ease-in-out infinite alternate;
+}
+@keyframes vm-drift { from { transform: scale(1.02); } to { transform: scale(1.1) translate(-1.5%, -1%); } }
+.vm-hero::after {
+  content: ""; position: absolute; inset: 0;
+  background:
+    linear-gradient(0deg, rgba(11,11,13,1) 0%, rgba(11,11,13,1) 2%, rgba(11,11,13,0.55) 32%, rgba(11,11,13,0) 62%),
+    linear-gradient(90deg, rgba(11,11,13,0.6) 0%, rgba(11,11,13,0) 55%),
+    linear-gradient(180deg, rgba(11,11,13,0.55) 0%, rgba(11,11,13,0) 22%);
+}
+.vm-hero-inner {
+  position: relative; z-index: 2; width: 100%; max-width: 1360px; margin: 0 auto;
+  padding: 0 var(--pad-x) clamp(3rem, 7vw, 5.5rem);
+}
+.vm-kicker {
+  display: inline-flex; align-items: center; gap: 0.6rem; margin: 0;
+  font-size: 0.66rem; letter-spacing: 0.24em; text-transform: uppercase; color: rgba(255,255,255,0.8);
+}
+.vm-kicker .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 4px rgba(169,138,87,0.25); }
+.vm-title {
+  font-family: var(--display); font-weight: 400; color: #fff;
+  font-size: clamp(2.4rem, 7vw, 5.6rem); line-height: 1.02; letter-spacing: -0.01em;
+  margin: 1rem 0 0.9rem; max-width: 14ch;
+}
+.vm-meta { margin: 0; font-size: 0.95rem; color: rgba(255,255,255,0.72); }
+.vm-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.9rem 1.6rem; margin-top: clamp(1.6rem, 3vw, 2.4rem); }
+.vm-play {
+  display: inline-flex; align-items: center; gap: 0.65rem;
+  background: #fff; color: #0b0b0d !important; border-radius: 999px;
+  padding: 0.95rem 1.7rem 0.95rem 1.35rem; font-size: 0.95rem; font-weight: 400; letter-spacing: 0.02em;
+  transition: transform 0.3s var(--ease), background 0.3s;
+}
+.vm-play svg { width: 18px; height: 18px; fill: currentColor; }
+.vm-play:hover { transform: scale(1.04); background: var(--gold-light, #d9c39a); }
+.vm-ghost {
+  color: #fff; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.45); padding-bottom: 2px;
+  transition: border-color 0.3s, color 0.3s;
+}
+.vm-ghost:hover { color: var(--gold-light, #d9c39a); border-color: currentColor; }
+
+/* The library. */
+.vm-library { background: #0b0b0d; color: #fff; padding: clamp(3.5rem, 8vw, 6.5rem) var(--pad-x) clamp(4.5rem, 10vw, 8rem); }
+.vm-head { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 0.6rem 2rem;
+  padding-bottom: 1.2rem; margin-bottom: clamp(1.8rem, 3.5vw, 2.6rem); border-bottom: 1px solid rgba(255,255,255,0.1); }
+.vm-head h2 { font-family: var(--sans); font-weight: 400; font-size: clamp(1.3rem, 2.4vw, 1.75rem); letter-spacing: 0.01em; color: #fff; margin: 0; }
+.vm-head p { margin: 0; font-size: 0.85rem; color: rgba(255,255,255,0.5); }
+
+.vm-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(2rem, 3.5vw, 2.8rem) clamp(1rem, 2vw, 1.6rem); }
+.vm-tile { display: block; color: #fff; }
+.vm-thumb { display: block; position: relative; overflow: hidden; border-radius: 10px; background: #1a1a1d; aspect-ratio: 16 / 9; }
+.vm-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.9s var(--ease), filter 0.5s; }
+.vm-tile:hover .vm-thumb img { transform: scale(1.05); filter: brightness(0.75); }
+.vm-dur {
+  position: absolute; right: 10px; bottom: 10px; z-index: 2;
+  background: rgba(0,0,0,0.78); color: #fff; border-radius: 4px;
+  padding: 3px 7px; font-size: 0.74rem; letter-spacing: 0.03em; font-variant-numeric: tabular-nums;
+}
+.vm-hover {
+  position: absolute; left: 50%; top: 50%; z-index: 2;
+  width: 58px; height: 58px; border-radius: 50%; background: rgba(255,255,255,0.95);
+  display: flex; align-items: center; justify-content: center;
+  transform: translate(-50%, -50%) scale(0.8); opacity: 0;
+  transition: opacity 0.35s var(--ease), transform 0.35s var(--ease);
+}
+.vm-hover svg { width: 20px; height: 20px; fill: #0b0b0d; margin-left: 3px; }
+.vm-tile:hover .vm-hover { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.vm-info { display: block; padding-top: 0.95rem; }
+.vm-name { display: block; font-size: 1.05rem; color: #fff; transition: color 0.3s; }
+.vm-tile:hover .vm-name { color: var(--gold-light, #d9c39a); }
+.vm-sub { display: block; margin-top: 0.3rem; font-size: 0.82rem; color: rgba(255,255,255,0.5); }
+
+/* The theatre. */
+.vm-locked { overflow: hidden; }
+.vm-theatre {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(8,8,10,0.97);
+  overflow-y: auto; overscroll-behavior: contain;
+  display: flex; justify-content: center;
+  padding: clamp(3.5rem, 7vh, 5rem) var(--pad-x) 3rem;
+  animation: vm-in 0.35s var(--ease);
+}
+.vm-theatre[hidden] { display: none; }
+@keyframes vm-in { from { opacity: 0; } to { opacity: 1; } }
+.vm-stage { width: 100%; max-width: 1180px; color: #fff; }
+.vm-player { position: relative; aspect-ratio: 16 / 9; background: #000; border-radius: 10px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,0.6); }
+.vm-player iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.vm-caption { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem 2rem; margin-top: 1.4rem; }
+.vm-ctitle { font-family: var(--display); font-weight: 400; font-size: clamp(1.5rem, 3vw, 2.3rem); color: #fff; margin: 0; }
+.vm-cmeta { margin: 0.35rem 0 0; font-size: 0.88rem; color: rgba(255,255,255,0.55); }
+.vm-calbum { color: #fff; font-size: 0.88rem; border-bottom: 1px solid rgba(255,255,255,0.4); padding-bottom: 2px; }
+.vm-calbum:hover { color: var(--gold-light, #d9c39a); }
+.vm-close {
+  position: fixed; top: 16px; right: 16px; z-index: 2;
+  width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.1); color: #fff;
+  display: flex; align-items: center; justify-content: center; transition: background 0.3s;
+}
+.vm-close:hover { background: rgba(255,255,255,0.22); }
+.vm-close svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.6; fill: none; }
+.vm-next { margin-top: clamp(2.2rem, 4vw, 3rem); padding-top: 1.4rem; border-top: 1px solid rgba(255,255,255,0.1); }
+.vm-next > p { margin: 0 0 1rem; font-size: 0.85rem; color: rgba(255,255,255,0.55); }
+.vm-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
+.vm-mini { display: block; text-align: left; color: #fff; background: none; border: 0; padding: 0; cursor: pointer; font: inherit; }
+.vm-mini-img { display: block; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; background: #1a1a1d; }
+.vm-mini-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--ease); }
+.vm-mini:hover .vm-mini-img img { transform: scale(1.06); }
+.vm-mini-t { display: block; margin-top: 0.6rem; font-size: 0.92rem; }
+.vm-mini-m { display: block; margin-top: 0.15rem; font-size: 0.76rem; color: rgba(255,255,255,0.5); }
+
+@media (max-width: 1080px) { .vm-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 700px) {
+  .vm-hero { min-height: 78svh; }
+  .vm-grid { grid-template-columns: 1fr; }
+  .vm-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .vm-theatre { padding-top: 4.2rem; align-items: flex-start; }
+  .vm-play { padding: 0.85rem 1.5rem 0.85rem 1.2rem; }
+}
+@media (prefers-reduced-motion: reduce) { .vm-hero-bg { animation: none; } }
+/* Overlap the hero's last pixels, which can show a hairline of the photo at odd screen sizes. */
+.vm-library { position: relative; z-index: 3; margin-top: -3px; }
+/* On the dark films page the header stays dark when it turns solid. */
+.films-page .site-header.is-solid { background: rgba(11, 11, 13, 0.94); color: var(--white); box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06); }
+.films-page.menu-open .site-header { color: var(--ink); background: transparent; }
+
+/* ---------- Films library as a poster wall ---------- */
+.vm-head h2 { font-family: var(--display); font-size: clamp(1.9rem, 3.6vw, 2.9rem); margin-top: 0.7rem; }
+.vm-head { align-items: flex-end; }
+.vm-wall { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: clamp(0.8rem, 1.4vw, 1.3rem); }
+.vm-poster {
+  position: relative; display: block; overflow: hidden;
+  aspect-ratio: 2 / 3; border-radius: 12px; background: #1a1a1d; color: #fff;
+  box-shadow: 0 18px 40px -18px rgba(0,0,0,0.8);
+  transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease);
+}
+.vm-poster img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease), filter 0.5s; }
+.vm-poster::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(0deg, rgba(8,8,10,0.95) 0%, rgba(8,8,10,0.6) 28%, rgba(8,8,10,0) 55%);
+}
+.vm-poster:hover { transform: translateY(-6px); box-shadow: 0 28px 50px -18px rgba(0,0,0,0.9); }
+.vm-poster:hover img { transform: scale(1.06); filter: brightness(0.85); }
+.vm-pdur {
+  position: absolute; top: 12px; right: 12px; z-index: 2;
+  background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  border-radius: 4px; padding: 3px 7px; font-size: 0.74rem; font-variant-numeric: tabular-nums;
+}
+.vm-pplay {
+  position: absolute; left: 50%; top: 42%; z-index: 2;
+  width: 54px; height: 54px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.8); background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  transform: translate(-50%, -50%); transition: background 0.4s, border-color 0.4s, transform 0.4s var(--ease);
+}
+.vm-pplay svg { width: 18px; height: 18px; fill: #fff; margin-left: 3px; transition: fill 0.4s; }
+.vm-poster:hover .vm-pplay { background: #fff; border-color: #fff; transform: translate(-50%, -50%) scale(1.08); }
+.vm-poster:hover .vm-pplay svg { fill: #0b0b0d; }
+.vm-pcap { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 1.1rem 1.1rem 1.2rem; }
+.vm-pno { display: block; font-family: var(--display); font-style: italic; font-size: 0.85rem; color: var(--gold-light); }
+.vm-pname { display: block; font-family: var(--display); font-size: clamp(1.15rem, 1.6vw, 1.45rem); line-height: 1.12; margin-top: 0.3rem; }
+.vm-pkind { display: block; margin-top: 0.45rem; font-size: 0.6rem; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.6); }
+
+/* Narrower screens: two across, with the first poster spanning the row. */
+@media (max-width: 1080px) {
+  .vm-wall { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .vm-poster:first-child { grid-column: 1 / -1; aspect-ratio: 4 / 3; }
+  .vm-poster:first-child .vm-pname { font-size: clamp(1.5rem, 5vw, 2rem); }
+}
+@media (max-width: 700px) {
+  .vm-pplay { width: 46px; height: 46px; }
+  .vm-pcap { padding: 0.9rem 0.85rem 1rem; }
+}
+/* Keep the play button off the couple's faces: bottom-right, beside the name. */
+.vm-pplay { left: auto; top: auto; right: 0.9rem; bottom: 1.1rem; width: 42px; height: 42px; transform: none; }
+.vm-poster:hover .vm-pplay { transform: scale(1.08); }
+.vm-pplay svg { width: 15px; height: 15px; }
+.vm-pcap { padding-right: 4rem; }
+@media (max-width: 1080px) {
+  .vm-poster:not(:first-child) .vm-pplay { right: auto; bottom: auto; left: 10px; top: 10px; width: 34px; height: 34px; }
+  .vm-poster:not(:first-child) .vm-pplay svg { width: 12px; height: 12px; }
+  .vm-poster:not(:first-child) .vm-pcap { padding-right: 0.85rem; }
+  .vm-poster:not(:first-child) .vm-pkind { letter-spacing: 0.16em; }
+}
+
+/* ---------- Films page, one dark cinema from top to bottom ---------- */
+.vm-yt { color: var(--gold-light); border-bottom: 1px solid rgba(196,168,119,0.45); }
+.vm-yt:hover { color: #fff; }
+
+/* What we film: three picture cards. */
+.vm-kinds { background: #0b0b0d; color: #fff; padding: clamp(2rem, 5vw, 4rem) var(--pad-x) clamp(4.5rem, 10vw, 8rem); }
+.vm-kgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1rem, 2vw, 1.6rem); }
+.vm-kind { position: relative; border-radius: 12px; overflow: hidden; background: #141417; padding-bottom: 1.6rem; }
+.vm-kimg { display: block; aspect-ratio: 16 / 10; overflow: hidden; }
+.vm-kimg img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease); }
+.vm-kind:hover .vm-kimg img { transform: scale(1.05); }
+.vm-klen {
+  display: flex; align-items: baseline; gap: 0.5rem; margin: 1.4rem 1.4rem 0;
+  font-family: var(--display); font-size: clamp(2rem, 3.4vw, 2.8rem); line-height: 1; color: var(--gold-light);
+}
+.vm-klen small { font-family: var(--sans); font-size: 0.62rem; letter-spacing: 0.24em; text-transform: uppercase; color: rgba(255,255,255,0.55); }
+.vm-kind h3 { font-family: var(--display); font-weight: 400; font-size: clamp(1.3rem, 2vw, 1.6rem); color: #fff; margin: 0.9rem 1.4rem 0.5rem; }
+.vm-kind p { margin: 0 1.4rem; color: rgba(255,255,255,0.62); line-height: 1.7; font-size: 0.95rem; }
+
+/* The closing invitation, in colour. */
+.vm-end {
+  position: relative; overflow: hidden; background: #0b0b0d; color: #fff;
+  min-height: 78svh; display: flex; align-items: flex-end;
+}
+.vm-end-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.vm-end::after {
+  content: ""; position: absolute; inset: 0;
+  background:
+    linear-gradient(180deg, rgba(11,11,13,1) 0%, rgba(11,11,13,0) 26%),
+    linear-gradient(0deg, rgba(11,11,13,0.95) 0%, rgba(11,11,13,0.45) 45%, rgba(11,11,13,0.15) 100%);
+}
+.vm-end-inner { position: relative; z-index: 2; width: 100%; max-width: 1360px; margin: 0 auto; padding: 0 var(--pad-x) clamp(3.5rem, 8vw, 6rem); }
+.vm-end h2 { font-family: var(--display); font-weight: 400; font-size: clamp(2.3rem, 6vw, 4.8rem); line-height: 1.05; color: #fff; margin: 1rem 0 0.9rem; }
+.vm-end-line { margin: 0; max-width: 46ch; color: rgba(255,255,255,0.78); line-height: 1.7; }
+
+/* Poster names on one line on wide screens. */
+@media (min-width: 1081px) {
+  .vm-pcap { padding-right: 3.6rem; }
+  .vm-pname { font-size: clamp(1rem, 1.15vw, 1.2rem); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
+@media (max-width: 900px) { .vm-kgrid { grid-template-columns: 1fr; } .vm-kimg { aspect-ratio: 16 / 9; } }
+/* The page itself is dark here, so no hairline of cream shows between sections. */
+body.films-page, .films-page main { background: #0b0b0d; }
+
+/* ==========================================================================
+   Kind Words page: one real couple's words first, outside ratings, three
+   large stories, recent WedMeGood reviews, then compact cards.
+   ========================================================================== */
+.kw-hero {
+  display: grid; grid-template-columns: 1.05fr 1fr; align-items: center;
+  gap: clamp(2rem, 5vw, 5rem);
+  max-width: 1360px; margin: 0 auto;
+  padding: calc(74px + clamp(3rem, 7vw, 6rem)) var(--pad-x) clamp(3rem, 6vw, 5rem);
+}
+.kw-kicker { color: var(--gold); }
+.kw-hero-quote {
+  font-family: var(--display); font-weight: 400;
+  font-size: clamp(1.9rem, 3.8vw, 3.4rem); line-height: 1.15; letter-spacing: -0.005em;
+  margin: 1.1rem 0 1.6rem; color: var(--ink);
+}
+.kw-hero-img { margin: 0; border-radius: 14px; overflow: hidden; box-shadow: 0 30px 60px -30px rgba(16,16,16,0.45); }
+.kw-hero-img img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; }
+
+.kw-by { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 1.2rem; margin-top: 1.2rem; }
+.kw-by .who { font-size: 0.66rem; letter-spacing: 0.26em; text-transform: uppercase; color: var(--gold); }
+.kw-by a, .kw-out {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-size: 0.62rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted);
+}
+.kw-by a i, .kw-out i { display: block; width: 16px; height: 1px; background: currentColor; transition: width 0.4s var(--ease); }
+.kw-by a:hover, .kw-out:hover { color: var(--ink); }
+.kw-by a:hover i, .kw-out:hover i { width: 28px; }
+
+/* Ratings strip. */
+.kw-rating { background: var(--ink); color: #fff; padding: clamp(1.6rem, 3vw, 2.2rem) var(--pad-x); }
+.kw-rating-in { display: flex; justify-content: center; flex-wrap: wrap; gap: clamp(1.4rem, 5vw, 5rem); }
+.kw-rate { display: grid; grid-template-columns: auto auto; align-items: center; column-gap: 0.7rem; color: #fff; }
+.kw-score { font-family: var(--display); font-size: clamp(2rem, 3.4vw, 2.6rem); line-height: 1; grid-row: span 2; }
+.kw-stars { color: var(--gold-light); letter-spacing: 0.12em; font-size: 0.9rem; }
+.kw-src { font-size: 0.6rem; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.65); }
+a.kw-rate:hover .kw-src { color: #fff; }
+
+/* Three large stories, photo and words side by side. */
+.kw-feature {
+  display: grid; grid-template-columns: 1fr 1fr; align-items: center;
+  gap: clamp(2rem, 5vw, 5rem);
+}
+.kw-feature + .kw-feature { margin-top: clamp(4rem, 9vw, 7rem); }
+.kw-feature.flip .kw-fimg { order: 2; }
+.kw-fimg { margin: 0; border-radius: 14px; overflow: hidden; box-shadow: 0 24px 50px -28px rgba(16,16,16,0.45); }
+.kw-fimg img { width: 100%; aspect-ratio: 5 / 4; object-fit: cover; display: block; }
+.kw-quote { font-family: var(--display); font-size: clamp(1.5rem, 2.6vw, 2.2rem); line-height: 1.25; margin: 0; color: var(--ink); }
+
+/* Expanding full text. */
+.kw-full { margin-top: 1.1rem; }
+.kw-full summary { list-style: none; cursor: pointer; display: inline-block; font-size: 0.6rem; letter-spacing: 0.24em; text-transform: uppercase; color: var(--gold); border-bottom: 1px solid currentColor; padding-bottom: 3px; }
+.kw-full summary::-webkit-details-marker { display: none; }
+.kw-full .c { display: none; }
+.kw-full[open] .o { display: none; }
+.kw-full[open] .c { display: inline; }
+.kw-full p, .kw-fulltext p { font-family: var(--serif); font-size: 1.05rem; line-height: 1.75; color: var(--ink-soft); margin: 1rem 0 0; }
+
+/* Card grids. */
+.kw-recent { background: var(--ivory); }
+.kw-more-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 0.6rem 2rem; margin-bottom: clamp(2rem, 4vw, 3rem); }
+.kw-more-head .folio { width: 100%; }
+.kw-more-head .display-s { margin: 0; }
+.kw-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1rem, 2vw, 1.6rem); align-items: start; }
+.kw-card { background: var(--white); border-radius: 12px; padding: 1.5rem 1.5rem 1.4rem; box-shadow: 0 1px 3px rgba(16,16,16,0.05), 0 12px 30px -16px rgba(16,16,16,0.18); }
+.kw-cimg { display: block; margin: -1.5rem -1.5rem 1.3rem; border-radius: 12px 12px 0 0; overflow: hidden; }
+.kw-cimg img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; transition: transform 1.2s var(--ease); }
+.kw-card:hover .kw-cimg img { transform: scale(1.04); }
+.kw-cquote { font-family: var(--display); font-size: clamp(1.15rem, 1.6vw, 1.35rem); line-height: 1.35; margin: 0; color: var(--ink); }
+.kw-wstars { display: block; color: var(--gold); letter-spacing: 0.14em; font-size: 0.85rem; margin-bottom: 0.9rem; }
+
+/* Closing invitation, in colour, with WhatsApp. */
+.kw-end { position: relative; overflow: hidden; text-align: center; color: #fff; background: var(--ink); padding: clamp(6rem, 14vw, 11rem) var(--pad-x); }
+.kw-end > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.55; }
+.kw-end::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.6)); }
+.kw-end-inner { position: relative; z-index: 2; }
+.kw-end .eyebrow { color: var(--gold-light); }
+.kw-end-line { max-width: 44ch; margin: 1.4rem auto 2.4rem; color: rgba(255,255,255,0.85); line-height: 1.7; }
+.kw-wa { display: block; margin-top: 1.3rem; font-size: 0.62rem; letter-spacing: 0.24em; text-transform: uppercase; color: rgba(255,255,255,0.85); text-decoration: underline; text-underline-offset: 4px; }
+
+@media (max-width: 1080px) { .kw-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 760px) {
+  .kw-hero { grid-template-columns: 1fr; padding-top: calc(74px + 2.4rem); }
+  .kw-hero-img { order: -1; }
+  .kw-hero-img img { aspect-ratio: 4 / 3; }
+  .kw-feature { grid-template-columns: 1fr; }
+  .kw-feature.flip .kw-fimg { order: 0; }
+  .kw-grid { grid-template-columns: 1fr; }
+  .kw-rating-in { justify-content: space-between; gap: 1.2rem; }
+  .kw-rate { grid-template-columns: 1fr; text-align: center; justify-items: center; row-gap: 0.35rem; }
+  .kw-score { grid-row: auto; }
+}
+@media (max-width: 760px) {
+  .kw-rating-in { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.6rem; }
+  .kw-score { font-size: 1.8rem; }
+  .kw-stars { font-size: 0.66rem; letter-spacing: 0.06em; }
+  .kw-src { font-size: 0.52rem; letter-spacing: 0.14em; line-height: 1.6; }
+}
+@media (max-width: 760px) { .kw-rating-in { align-items: start; } }
+
+/* ==========================================================================
+   Studio page: facts first, the founder, real differences, range, process.
+   ========================================================================== */
+.st-intro { font-size: 1.05rem; line-height: 1.8; color: var(--ink-soft); max-width: 46ch; margin: 0; }
+.st-facts-in { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.2rem; text-align: center; }
+.st-fact { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; color: #fff; }
+.st-fact .kw-score small { font-size: 0.5em; color: var(--gold-light); margin-left: 0.15em; vertical-align: 0.4em; }
+a.st-fact:hover .kw-src { color: #fff; }
+
+.st-founder { display: grid; grid-template-columns: minmax(0, 1fr); max-width: 760px; }
+.st-founder:has(.st-fphoto:not([hidden])) { grid-template-columns: 1fr 1.2fr; gap: clamp(2rem, 5vw, 4rem); max-width: none; align-items: center; }
+.st-fphoto { margin: 0; border-radius: 14px; overflow: hidden; }
+.st-fphoto img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; }
+.st-founder .display-s { margin: 0.6rem 0 0.3rem; }
+.st-role { font-size: 0.62rem; letter-spacing: 0.26em; text-transform: uppercase; color: var(--gold); margin: 0 0 1.4rem; }
+.st-fquote { margin: 1.8rem 0 0; padding-left: 1.3rem; border-left: 1px solid var(--gold); font-family: var(--display); font-size: clamp(1.15rem, 1.8vw, 1.4rem); line-height: 1.4; color: var(--ink); }
+.st-fquote cite { display: block; margin-top: 0.8rem; font-family: var(--sans); font-style: normal; font-size: 0.6rem; letter-spacing: 0.24em; text-transform: uppercase; color: var(--muted); }
+.st-members { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.4rem; margin-top: clamp(2.5rem, 5vw, 4rem); }
+.st-member img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 12px; display: block; }
+.st-member .nm { display: block; margin-top: 0.8rem; font-family: var(--display); font-size: 1.2rem; }
+.st-member .rl { display: block; font-size: 0.6rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); margin-top: 0.3rem; }
+
+.st-diff-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1.4rem, 3vw, 2.6rem); }
+.st-d { border-top: 1px solid rgba(255,255,255,0.18); padding-top: 1.4rem; }
+.st-dn { font-family: var(--display); font-style: italic; color: var(--gold-light); font-size: 1.1rem; }
+.st-d h3 { font-family: var(--display); font-weight: 400; font-size: clamp(1.35rem, 2.2vw, 1.75rem); color: #fff; margin: 0.6rem 0 0.7rem; }
+.st-d p { color: rgba(255,255,255,0.7); line-height: 1.75; margin: 0 0 1rem; }
+
+.st-range { background: var(--ivory); }
+.st-range-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(1rem, 2vw, 1.6rem); }
+.st-range-item { display: block; color: var(--ink); }
+.st-rimg { display: block; overflow: hidden; border-radius: 12px; box-shadow: 0 16px 26px -14px rgba(16,16,16,0.38); }
+.st-rimg img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; transition: transform 1.2s var(--ease); }
+.st-range-item:hover .st-rimg img { transform: scale(1.05); }
+.st-rname { display: block; margin-top: 1rem; font-family: var(--display); font-size: clamp(1.15rem, 1.6vw, 1.35rem); }
+.st-rsub { display: block; margin-top: 0.3rem; font-size: 0.6rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); }
+
+@media (max-width: 900px) {
+  .st-facts-in { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 1.6rem; }
+  .st-diff-grid { grid-template-columns: 1fr; }
+  .st-range-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .st-founder:has(.st-fphoto:not([hidden])) { grid-template-columns: 1fr; }
+  .st-members { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.st-members[hidden], .st-fphoto[hidden], .kw-rating[hidden] { display: none !important; }
+
+/* ==========================================================================
+   Home page, round two: colour hero, trust strip, one film, visible reviews.
+   ========================================================================== */
+.hero-media img { filter: none; }
+.hero::after { background: linear-gradient(0deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.25) 50%, rgba(0,0,0,0.35) 100%); }
+.hero-inner h1 { max-width: 16ch; }
+
+.home-film { margin-top: 0; }
+.home-film .vm-head h2 { font-family: var(--display); font-size: clamp(1.8rem, 3.6vw, 2.9rem); line-height: 1.12; max-width: 22ch; }
+.home-film .vm-head h2 em { font-style: italic; color: var(--gold-light); }
+.home-film-plate { position: relative; display: block; overflow: hidden; border-radius: 14px; aspect-ratio: 2.2 / 1; background: #000; color: #fff; }
+.home-film-plate img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 1.6s var(--ease); }
+.home-film-plate::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(8,8,10,0.85) 0%, rgba(8,8,10,0.2) 50%, rgba(8,8,10,0) 100%); }
+.home-film-plate:hover img { transform: scale(1.04); }
+.home-film-cap { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; display: flex; align-items: center; flex-wrap: wrap; gap: 1rem 1.6rem; padding: clamp(1.2rem, 3vw, 2.2rem); }
+.home-film-name { font-family: var(--display); font-size: clamp(1.3rem, 2.4vw, 2rem); line-height: 1.1; }
+.home-film-name small { display: block; margin-top: 0.4rem; font-family: var(--sans); font-size: 0.62rem; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.7); }
+
+.home-reviews .display-s { color: #fff; margin: 0.6rem 0 0.4rem; }
+.hr-star { color: var(--gold-light); font-size: 0.6em; vertical-align: 0.35em; margin-left: 0.15em; }
+.hr-src { font-size: 0.6rem; letter-spacing: 0.24em; text-transform: uppercase; color: rgba(255,255,255,0.55); margin: 0; }
+.hr-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1.4rem, 3vw, 2.6rem); }
+.hr-q { margin: 0; border-top: 1px solid rgba(255,255,255,0.18); padding-top: 1.4rem; }
+.hr-q blockquote { margin: 0; font-family: var(--display); font-size: clamp(1.15rem, 1.7vw, 1.4rem); line-height: 1.4; color: #fff; }
+.hr-q figcaption { display: flex; align-items: center; gap: 0.8rem; margin-top: 1.3rem; font-size: 0.62rem; letter-spacing: 0.24em; text-transform: uppercase; color: var(--gold-light); }
+.hr-q figcaption img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
+.hr-wmg { width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(196,168,119,0.5); display: inline-flex; align-items: center; justify-content: center; font-size: 1rem; letter-spacing: 0; }
+
+@media (max-width: 900px) {
+  .hr-grid { grid-template-columns: 1fr; }
+  .home-film-plate { aspect-ratio: 4 / 3; }
+}
+
+/* Home: the other four films as posters under the featured one. */
+.home-wall { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: clamp(1rem, 2vw, 1.4rem); }
+@media (max-width: 1080px) {
+  .home-wall { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .home-wall .vm-poster:first-child { grid-column: auto; aspect-ratio: 2 / 3; }
+  .home-wall .vm-poster:first-child .vm-pname { font-size: inherit; }
+  .home-wall .vm-poster:first-child .vm-pplay { right: auto; bottom: auto; left: 10px; top: 10px; width: 34px; height: 34px; }
+  .home-wall .vm-poster:first-child .vm-pplay svg { width: 12px; height: 12px; }
+  .home-wall .vm-poster:first-child .vm-pcap { padding-right: 0.85rem; }
+}
+
+/* ---------- Contact page: act first, form second ---------- */
+.ct-actions { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1.8rem; }
+.ct-btn {
+  display: inline-flex; align-items: center; gap: 0.55rem;
+  padding: 0.95rem 1.4rem; border-radius: 999px; font-size: 0.9rem;
+  border: 1px solid rgba(16,16,16,0.25); color: var(--ink);
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+.ct-btn svg { width: 18px; height: 18px; fill: currentColor; }
+.ct-wa { background: var(--gold); border-color: var(--gold); color: #fff !important; }
+.ct-wa:hover { background: var(--ink); border-color: var(--ink); }
+.ct-call:hover, .ct-form:hover { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+.ct-where { margin: 1.4rem 0 0; font-size: 0.62rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); line-height: 1.9; }
+.ct-hero .kw-hero-img img { aspect-ratio: 4 / 5; }
+.field .opt { margin-left: 0.4rem; font-size: 0.9em; letter-spacing: 0.12em; color: rgba(16,16,16,0.38); text-transform: lowercase; }
+.ct-trust { margin: 2rem 0 0; font-size: 0.85rem; color: var(--ink-soft); }
+.ct-stars { color: var(--gold); }
+.ct-addr { line-height: 1.7; }
+.ct-addr .link-gold { display: inline-flex; margin-top: 0.6rem; }
+.ct-addr small { display: block; margin-top: 0.5rem; font-size: 0.8rem; color: var(--muted); }
+@media (max-width: 760px) {
+  .ct-hero .kw-hero-img { display: none; }
+  .ct-btn { flex: 1 1 auto; justify-content: center; }
+  .ct-form { flex-basis: 100%; }
+}
+
+/* Album pages: the invitation halfway through, and the gallery continuing after it. */
+.album-ask { margin: clamp(2.6rem, 6vw, 4.5rem) 0; }
+.album-ask + .gallery { margin-top: 0; }
