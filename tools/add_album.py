@@ -2,7 +2,7 @@
 """Build a new album from a folder of photographs."""
 import json, os, re, sys, unicodedata
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from resize import process
+from resize import process, web_name
 
 SITE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(SITE, "content/weddings.json")
@@ -30,7 +30,7 @@ def run(source, couple, kind, city, date):
     saved = written = 0
     names, failed = [], []
     for i, f in enumerate(photos, 1):
-        name = f"{i:02d}.jpg"                       # numbered, so the order is the order
+        name = web_name(f"{i:02d}")                 # numbered, so the order is the order
         ok, before, after = process(os.path.join(source, f), folder, name)
         if ok:
             names.append(name); saved += before; written += after

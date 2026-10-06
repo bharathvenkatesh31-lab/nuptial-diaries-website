@@ -1,51 +1,42 @@
 #!/usr/bin/env python3
 """Turn a photograph straight off the camera into the two sizes the site uses.
 
-  display copy  - 1800px on the long edge, for when a photograph is opened
-  thumbnail     - 800px, what a gallery or grid actually loads
+There is one recipe for every photograph on this website, and it lives in
+tools/import_folders.py. This file just hands single photographs to it, so an
+album added one folder at a time comes out identical to one built by
+"Rebuild All Albums" — same size, same quality, same colour handling.
 
-A photograph already small enough is copied rather than re-encoded, because
-re-compressing an already-compressed JPEG only loses quality and can make the
-file bigger.
+  master  - 2800px on the long edge, what a photograph is stored as
+  small   - 900px, used where a page names a photograph itself and when the
+            site is run off this Mac
 """
-import os, shutil, subprocess, sys
+import os, sys
 
-DISPLAY_EDGE, DISPLAY_Q = 1800, 70
-THUMB_EDGE,   THUMB_Q   = 800, 62
-COPY_IF_UNDER_BYTES     = 700_000
-
-
-def dimensions(path):
-    out = subprocess.run(["sips", "-g", "pixelWidth", "-g", "pixelHeight", path],
-                         capture_output=True, text=True).stdout
-    vals = [int(l.split(":")[1]) for l in out.splitlines() if "pixel" in l]
-    return (vals[0], vals[1]) if len(vals) == 2 else (0, 0)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from import_folders import load_srgb, _resized, MASTER_EDGE, MASTER_Q, SMALL_EDGE, SMALL_Q, EXT
 
 
-def make(src, dest, edge, quality, allow_copy):
-    w, h = dimensions(src)
-    if not w:
-        return False
-    os.makedirs(os.path.dirname(dest), exist_ok=True)
-    if allow_copy and max(w, h) <= edge and os.path.getsize(src) <= COPY_IF_UNDER_BYTES:
-        shutil.copy2(src, dest)
-        return True
-    r = subprocess.run(["sips", "-Z", str(edge), "-s", "format", "jpeg",
-                        "-s", "formatOptions", str(quality), src, "--out", dest],
-                       capture_output=True)
-    return r.returncode == 0 and os.path.exists(dest)
+def web_name(stem):
+    """The name a photograph is saved under, whatever it arrived as."""
+    return os.path.splitext(str(stem))[0] + EXT
 
 
 def process(src, folder, name):
     """Write both sizes for one photograph. Returns (ok, bytes_before, bytes_after)."""
     before = os.path.getsize(src)
+    name = web_name(name)
     big = os.path.join(folder, name)
     small = os.path.join(folder, "thumb", name)
-    ok = make(src, big, DISPLAY_EDGE, DISPLAY_Q, allow_copy=True)
-    ok = make(src, small, THUMB_EDGE, THUMB_Q, allow_copy=False) and ok
-    after = (os.path.getsize(big) if os.path.exists(big) else 0) + \
-            (os.path.getsize(small) if os.path.exists(small) else 0)
-    return ok, before, after
+    try:
+        im = load_srgb(src)
+        for dest, edge, q in ((big, MASTER_EDGE, MASTER_Q), (small, SMALL_EDGE, SMALL_Q)):
+            os.makedirs(os.path.dirname(dest), exist_ok=True)
+            _resized(im, edge).save(dest, "WEBP", quality=q, method=5)
+    except Exception as e:
+        print(f"   {os.path.basename(src)}: {type(e).__name__}: {e}", file=sys.stderr)
+        return False, before, 0
+    after = os.path.getsize(big) + os.path.getsize(small)
+    return True, before, after
 
 
 if __name__ == "__main__":
