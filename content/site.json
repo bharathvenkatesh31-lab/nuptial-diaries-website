@@ -21,59 +21,87 @@
     "photos": [
       {
         "image": "/images/site/ABI02055.webp",
-        "blackAndWhite": false
+        "blackAndWhite": false,
+        "focusX": 50,
+        "focusY": 50
       },
       {
         "image": "/images/site/ABI09015.webp",
-        "blackAndWhite": false
+        "blackAndWhite": false,
+        "focusX": 50,
+        "focusY": 50
       },
       {
         "image": "/images/site/ABI09488.webp",
-        "blackAndWhite": false
+        "blackAndWhite": false,
+        "focusX": 50,
+        "focusY": 50
       },
       {
         "image": "/images/site/BAR00874.webp",
-        "blackAndWhite": false
+        "blackAndWhite": false,
+        "focusX": 50,
+        "focusY": 50
       },
       {
         "image": "/images/site/BAR05943.webp",
-        "blackAndWhite": false
+        "blackAndWhite": false,
+        "focusX": 50,
+        "focusY": 50
       },
       {
         "image": "/images/site/BAR06012.webp",
-        "blackAndWhite": false
+        "blackAndWhite": false,
+        "focusX": 50,
+        "focusY": 50
       },
       {
         "image": "/images/site/BAR06397.webp",
-        "blackAndWhite": false
+        "blackAndWhite": false,
+        "focusX": 50,
+        "focusY": 50
       },
       {
         "image": "/images/site/BAR06800.webp",
-        "blackAndWhite": false
+        "blackAndWhite": false,
+        "focusX": 50,
+        "focusY": 50
       },
       {
         "image": "/images/site/BAR09086.webp",
-        "blackAndWhite": false
+        "blackAndWhite": false,
+        "focusX": 50,
+        "focusY": 50
       },
       {
         "image": "/images/site/DSC07573.webp",
-        "blackAndWhite": false
+        "blackAndWhite": false,
+        "focusX": 50,
+        "focusY": 50
       },
       {
         "image": "/images/site/DSC07930.webp",
-        "blackAndWhite": false
+        "blackAndWhite": false,
+        "focusX": 50,
+        "focusY": 50
       },
       {
         "image": "/images/site/VIN03288.webp",
-        "blackAndWhite": false
+        "blackAndWhite": false,
+        "focusX": 50,
+        "focusY": 50
       },
       {
         "image": "/images/site/VIN08338.webp",
-        "blackAndWhite": false
+        "blackAndWhite": false,
+        "focusX": 50,
+        "focusY": 50
       },
       {
         "image": "/images/site/VIN09306.webp",
-        "blackAndWhite": false
+        "blackAndWhite": false,
+        "focusX": 50,
+        "focusY": 50
       }
     ]
   }

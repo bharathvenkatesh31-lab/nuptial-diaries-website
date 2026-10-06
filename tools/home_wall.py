@@ -40,8 +40,14 @@ def main(source):
                                 (os.path.join(DEST, "thumb"), SMALL_EDGE, SMALL_Q)):
             _resized(im, edge).save(os.path.join(folder, name), "WEBP", quality=q, method=5)
         # Black and white is a look applied by the page, not baked into the
-        # file, so it stays off until someone chooses it in the editor.
-        out.append({"image": f"/images/site/{name}", "blackAndWhite": False})
+        # file, so it stays off until someone chooses it in the editor. Where a
+        # photograph is already on the wall, how it was framed is kept.
+        path = f"/images/site/{name}"
+        before = next((p for p in was if p.get("image") == path), {})
+        out.append({"image": path,
+                    "blackAndWhite": before.get("blackAndWhite", False),
+                    "focusX": before.get("focusX", 50),
+                    "focusY": before.get("focusY", 50)})
         print(f"  {i:2}/{len(photos)}  {f}  ->  {name}", flush=True)
 
     data.setdefault("wall", {})["photos"] = out

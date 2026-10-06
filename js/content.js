@@ -122,6 +122,7 @@
           /* A tile is about a fifth of the page, so that is what gets asked
              for; the whole photograph only loads when one is opened. */
           "<img " + window.photoAttrs(p.image, 280) +
+          ' style="object-position:' + focus(p.focusX) + "% " + focus(p.focusY) + '%"' +
           ' data-full="' + esc(window.photoFull(p.image)) +
           '" alt="Wedding photograph by Nuptial Diaries" loading="lazy"></figure>'
         );
@@ -134,6 +135,15 @@
   });
 
   function esc(v) { return String(v).replace(/"/g, "&quot;"); }
+
+  /* The wall's tiles are square and most photographs are not, so each one is
+     cropped. This is how far across and down the part that shows sits:
+     50 is the middle, 0 the left or top edge, 100 the right or bottom.
+     Anything missing or odd falls back to the middle. */
+  function focus(v) {
+    const n = Number(v);
+    return Number.isFinite(n) ? Math.min(100, Math.max(0, n)) : 50;
+  }
   function thumbPath(src) { return /^\/?images\/site\//.test(src) ? String(src).replace(/\/([^/]+)$/, "/thumb/$1") : src; }
 
   function tileHtml(w) {

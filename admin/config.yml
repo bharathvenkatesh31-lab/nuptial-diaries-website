@@ -104,6 +104,12 @@ collections:
                 fields:
                   - { name: image, label: "Photograph", widget: image }
                   - { name: blackAndWhite, label: "Show in black and white", widget: boolean, default: false, required: false }
+                  # The wall's tiles are square and most photographs are not, so
+                  # each one is cropped. These two move the part that shows.
+                  - { name: focusX, label: "Move across  (0 = show the left, 50 = middle, 100 = show the right)",
+                      widget: number, value_type: int, min: 0, max: 100, step: 5, default: 50, required: false }
+                  - { name: focusY, label: "Move up and down  (0 = show the top, 50 = middle, 100 = show the bottom)",
+                      widget: number, value_type: int, min: 0, max: 100, step: 5, default: 50, required: false }
 
   # ---------------------------------------------------------------- Weddings
   - name: "weddings"
