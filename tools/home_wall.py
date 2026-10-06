@@ -46,8 +46,7 @@ def main(source):
         before = next((p for p in was if p.get("image") == path), {})
         out.append({"image": path,
                     "blackAndWhite": before.get("blackAndWhite", False),
-                    "focusX": before.get("focusX", 50),
-                    "focusY": before.get("focusY", 50)})
+                    "focus": before.get("focus", {"x": 50, "y": 50})})
         print(f"  {i:2}/{len(photos)}  {f}  ->  {name}", flush=True)
 
     data.setdefault("wall", {})["photos"] = out

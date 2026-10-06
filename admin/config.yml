@@ -93,23 +93,24 @@ collections:
             name: wall
             widget: object
             fields:
-              - { name: tileNumber, label: "Number on the white card", widget: string }
+              # Left empty on purpose when the numbering came off the front page.
+              # Required by default, it made every Site settings save fail.
+              - { name: tileNumber, label: "Number on the white card", widget: string, required: false }
               - { name: tileLine, label: "Words on the white card", widget: string }
               - label: "Photographs"
                 name: photos
                 widget: list
                 label_singular: "Photograph"
                 summary: "{{fields.image}}"
-                hint: "Drag to reorder. The white card always sits in the middle of the wall."
+                collapsed: false
+                hint: "Drag a row by its handle to reorder. The white card always sits in the middle of the wall."
                 fields:
                   - { name: image, label: "Photograph", widget: image }
                   - { name: blackAndWhite, label: "Show in black and white", widget: boolean, default: false, required: false }
                   # The wall's tiles are square and most photographs are not, so
                   # each one is cropped. These two move the part that shows.
-                  - { name: focusX, label: "Move across  (0 = show the left, 50 = middle, 100 = show the right)",
-                      widget: number, value_type: int, min: 0, max: 100, step: 5, default: 50, required: false }
-                  - { name: focusY, label: "Move up and down  (0 = show the top, 50 = middle, 100 = show the bottom)",
-                      widget: number, value_type: int, min: 0, max: 100, step: 5, default: 50, required: false }
+                  # Drag the photograph inside its tile; saves two numbers, 0-100.
+                  - { name: focus, label: "Framing", widget: framepicker, required: false }
 
   # ---------------------------------------------------------------- Weddings
   - name: "weddings"
