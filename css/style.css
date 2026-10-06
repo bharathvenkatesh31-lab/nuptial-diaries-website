@@ -2567,6 +2567,14 @@ a.st-fact:hover .kw-src { color: #fff; }
 .st-member .nm { display: block; margin-top: 0.8rem; font-family: var(--display); font-size: 1.2rem; }
 .st-member .rl { display: block; font-size: 0.6rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); margin-top: 0.3rem; }
 
+/* The team with the couples they photographed — four across, two on a tablet,
+   two on a phone, so the faces stay big enough to be faces. */
+.st-crew { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(0.8rem, 1.6vw, 1.3rem); margin-top: clamp(2.5rem, 5vw, 4rem); }
+.st-crew figure { margin: 0; border-radius: 12px; overflow: hidden; cursor: zoom-in; box-shadow: 0 16px 26px -16px rgba(16,16,16,0.4); }
+.st-crew img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; transition: transform 1.4s var(--ease); }
+.st-crew figure:hover img { transform: scale(1.04); }
+.st-crewline { max-width: 760px; margin: clamp(1.2rem, 2.5vw, 1.8rem) 0 0; color: var(--muted); font-size: 0.95rem; line-height: 1.8; }
+
 .st-diff-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1.4rem, 3vw, 2.6rem); }
 .st-d { border-top: 1px solid rgba(255,255,255,0.18); padding-top: 1.4rem; }
 .st-dn { font-family: var(--display); font-style: italic; color: var(--gold-light); font-size: 1.1rem; }
@@ -2588,6 +2596,7 @@ a.st-fact:hover .kw-src { color: #fff; }
   .st-range-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .st-founder:has(.st-fphoto:not([hidden])) { grid-template-columns: 1fr; }
   .st-members { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .st-crew { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 .st-members[hidden], .st-fphoto[hidden], .kw-rating[hidden] { display: none !important; }
 
