@@ -119,11 +119,11 @@
         if (i === TILE_AT) cells.push(tileHtml(s.wall));
         cells.push(
           '<figure' + (p.blackAndWhite ? ' class="bw"' : "") + " data-lightbox>" +
-          /* the wall loads an 800px thumbnail; the full photo opens in the viewer.
-             A photo added in the editor has no thumbnail yet, so it falls back to the full one. */
-          '<img src="' + esc(thumbPath(p.image)) + '" data-full="' + esc(p.image) +
-          '" onerror="this.onerror=null;this.src=this.dataset.full"' +
-          ' alt="Wedding photograph by Nuptial Diaries" loading="lazy"></figure>'
+          /* A tile is about a fifth of the page, so that is what gets asked
+             for; the whole photograph only loads when one is opened. */
+          "<img " + window.photoAttrs(p.image, 280) +
+          ' data-full="' + esc(window.photoFull(p.image)) +
+          '" alt="Wedding photograph by Nuptial Diaries" loading="lazy"></figure>'
         );
       });
       if (s.wall.photos.length <= TILE_AT) cells.push(tileHtml(s.wall));
