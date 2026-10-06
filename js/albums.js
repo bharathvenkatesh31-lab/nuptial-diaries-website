@@ -44,12 +44,20 @@ function renderAlbums() {
     return all.length ? all[0] : "";
   }
 
-  /* Every photograph is saved twice: the display copy, and a small copy in a
-     "thumb" folder beside it. Grids show the small one and only load the big
-     one when a photograph is opened, so an album of eighty opens quickly. */
-  function thumbOf(src) {
-    return String(src).replace(/\/([^/]+)$/, "/thumb/$1");
-  }
+  /* How wide each photograph is actually drawn, so nothing is downloaded
+     larger than the slot it goes into — or smaller, which is what made the
+     grids look soft. These follow the layout: .wrap is 1360px, the wedding
+     grid and an album's gallery are two columns of it, pre-wedding is four. */
+  const DRAWN = { card: 650, pre: 330, mini: 320, tile: 665, cover: 1360 };
+
+  /* Attributes for a photograph: the right size for this slot, twice that for
+     a retina screen, and the copy on disk if a resize ever fails. */
+  const pic = (src, width, q) =>
+    typeof window.photoAttrs === "function"
+      ? window.photoAttrs(src, width, q)
+      : 'src="' + esc(String(src).replace(/\/([^/]+)$/, "/thumb/$1")) + '"';
+  const full = (src) =>
+    typeof window.photoFull === "function" ? window.photoFull(src) : src;
 
   /* ------------------------------------------------ the Photography grid */
   /* A pre-wedding shoot belongs to the couple's wedding when the names match.
@@ -69,13 +77,13 @@ function renderAlbums() {
     /* Two more moments under the cover, so the day shows without opening it. */
     const minis = !small && Array.isArray(w.previews) && w.previews.length >= 2
       ? '<span class="minis">' + w.previews.slice(0, 2).map((src) =>
-          '<span><img src="' + esc(thumbOf(src)) + '" alt="" loading="lazy"></span>').join("") + "</span>"
+          '<span><img ' + pic(src, DRAWN.mini) + ' alt="" loading="lazy"></span>').join("") + "</span>"
       : "";
     const line = where || what;
     return (
       '<a class="wcard' + (small ? " small" : "") + '" href="album.html?w=' + encodeURIComponent(w.slug) + '">' +
-        '<span class="shot"><img src="' + esc(thumbOf(coverOf(w))) + '" alt="' + esc(w.name) +
-          ', photographed by Nuptial Diaries" loading="lazy"></span>' +
+        '<span class="shot"><img ' + pic(coverOf(w), small ? DRAWN.pre : DRAWN.card) +
+          ' alt="' + esc(w.name) + ', photographed by Nuptial Diaries" loading="lazy"></span>' +
         minis +
         '<span class="cap">' +
           (small ? "" : '<span class="no">No. ' + String(n).padStart(2, "0") + "</span>") +
@@ -171,17 +179,20 @@ function renderAlbums() {
       document.title = w.name + " — Nuptial Diaries";
 
       const pics = photosOf(w);
+      /* The cover is already shown full width above the grid, so the grid
+         starts after it — the same photograph twice reads like a mistake. */
+      const tiles = pics.filter((src) => src !== coverOf(w));
       /* The small copy is what loads; data-full is what the viewer opens. */
       const shotHtml = (src) =>
-          '<figure data-lightbox><img src="' + esc(thumbOf(src)) +
-          '" data-full="' + esc(src) +
+          '<figure data-lightbox><img ' + pic(src, DRAWN.tile) +
+          ' data-full="' + esc(full(src)) +
           '" alt="Photograph from the wedding of ' + esc(w.name) +
           '" loading="lazy"></figure>';
       /* Halfway through a long album, a quiet invitation: it is the moment a
          couple is most sure they want this for their own wedding. */
-      const half = pics.length > 12 ? Math.ceil(pics.length / 2) : pics.length;
-      const shotsA = pics.slice(0, half).map(shotHtml).join("");
-      const shotsB = pics.slice(half).map(shotHtml).join("");
+      const half = tiles.length > 12 ? Math.ceil(tiles.length / 2) : tiles.length;
+      const shotsA = tiles.slice(0, half).map(shotHtml).join("");
+      const shotsB = tiles.slice(half).map(shotHtml).join("");
       const live = Object.assign({}, typeof SITE !== "undefined" ? SITE : {}, window.SITE_CONTENT || {});
       const digits = String(live.whatsapp || "").replace(/\D/g, "");
       const midAsk = shotsB
@@ -227,7 +238,7 @@ function renderAlbums() {
       const preShots = pre
         ? '<div class="pre-in-album reveal"><p class="folio"><span class="no">Before</span> The Pre-Wedding Shoot</p>' +
           '<div class="gallery">' + photosOf(pre).map((src) =>
-            '<figure data-lightbox><img src="' + esc(thumbOf(src)) + '" data-full="' + esc(src) +
+            '<figure data-lightbox><img ' + pic(src, DRAWN.tile) + ' data-full="' + esc(full(src)) +
             '" alt="Pre-wedding photograph of ' + esc(w.name) + '" loading="lazy"></figure>').join("") +
           "</div></div>"
         : "";
@@ -241,7 +252,7 @@ function renderAlbums() {
         "</div>" +
         '<div class="wrap" style="margin-top:clamp(2.5rem,6vw,4.5rem);">' +
           '<figure class="album-cover reveal" style="margin-top:0;">' +
-            '<img src="' + esc(coverOf(w)) + '" alt="' + esc(w.name) + ', photographed by Nuptial Diaries">' +
+            '<img ' + pic(coverOf(w), DRAWN.cover, 84) + ' alt="' + esc(w.name) + ', photographed by Nuptial Diaries">' +
           "</figure>" +
           '<div class="gallery reveal" style="margin-top:clamp(2rem,4vw,3rem);">' + shotsA + "</div>" +
           midAsk +

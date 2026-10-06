@@ -24,6 +24,53 @@
     document.body.appendChild(banner);
   }
 
+  /* ------------------------------------------------- photographs, right-sized */
+  /* Every photograph is stored once, 2800 pixels on its long edge. Netlify
+     resizes it on the way out, so a picture in a grid weighs around 60 KB
+     rather than the whole master, and a retina screen gets twice the pixels
+     of an ordinary one.
+
+     Run off this Mac there is no Netlify, so the small copies on disk are
+     used instead; and if a resize ever fails anywhere, the browser quietly
+     falls back to those same files rather than showing a broken picture. */
+  const NO_RESIZER =
+    location.protocol === "file:" ||
+    /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+
+  function smallCopy(src) { return String(src).replace(/\/([^/]+)$/, "/thumb/$1"); }
+
+  function sized(src, width, quality) {
+    if (NO_RESIZER) return width <= 900 ? smallCopy(src) : src;
+    return "/.netlify/images?url=" + encodeURIComponent(src) +
+           "&w=" + Math.round(width) + "&q=" + quality;
+  }
+  function attr(v) { return String(v).replace(/&/g, "&amp;").replace(/"/g, "&quot;"); }
+
+  /* Returns the img attributes for a photograph drawn `cssWidth` wide. */
+  window.photoAttrs = function (src, cssWidth, quality) {
+    if (!src) return "";
+    const q = quality || 78;
+    const one = sized(src, cssWidth, q);
+    const two = sized(src, cssWidth * 2, q);
+    return 'src="' + attr(one) + '" srcset="' + attr(one) + ' 1x, ' + attr(two) + ' 2x"' +
+           ' data-fallback="' + attr(smallCopy(src)) + '"';
+  };
+
+  /* The full-size address, for when a photograph is opened in the viewer. */
+  window.photoFull = function (src) { return sized(src, 2800, 86); };
+
+  /* A picture that will not load falls back to the copy on disk. The error
+     event does not bubble, so this listens on the way down. */
+  document.addEventListener("error", function (e) {
+    const img = e.target;
+    if (img && img.tagName === "IMG" && img.dataset.fallback) {
+      const back = img.dataset.fallback;
+      delete img.dataset.fallback;
+      img.removeAttribute("srcset");
+      img.src = back;
+    }
+  }, true);
+
   const get = (url) =>
     fetch(url, { cache: "no-store" }).then((r) => {
       if (!r.ok) throw new Error(url + " could not be read (" + r.status + ")");
