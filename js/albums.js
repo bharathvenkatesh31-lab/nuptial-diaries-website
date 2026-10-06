@@ -133,8 +133,8 @@ function renderAlbums() {
         ).join("") +
         "</div>";
       if (weds.length > FIRST_SHOWN) {
-        html += '<div class="center wmore"><button class="btn-line" type="button" data-show-all>See all ' +
-          weds.length + " weddings</button></div>";
+        html += '<div class="center wmore"><button class="btn-line" type="button" data-show-all>' +
+          "See all the weddings</button></div>";
       }
       html += "</div>";
       if (pres.length) {
@@ -143,18 +143,29 @@ function renderAlbums() {
             '<p class="folio"><span class="no">No. 02</span> Before The Wedding</p>' +
             '<h2 class="display-s">Pre-wedding shoots</h2>' +
             '<p class="body-copy pre-intro">A relaxed day with just the two of you, somewhere that means something.</p>' +
-            '<div class="wgrid pre">' + pres.map((w) => card(w, 0, true)).join("") + "</div>" +
+            '<div class="wgrid pre">' +
+              pres.map((w, i) =>
+                card(w, 0, true).replace('class="wcard', 'class="wcard' + (i >= FIRST_SHOWN ? " later" : ""))
+              ).join("") +
+            "</div>" +
+            (pres.length > FIRST_SHOWN
+              ? '<div class="center wmore"><button class="btn-line" type="button" data-show-all>' +
+                "See all the pre-wedding shoots</button></div>"
+              : "") +
           "</div>";
       }
       grid.innerHTML = html;
 
-      const more = grid.querySelector("[data-show-all]");
-      if (more) {
+      /* Weddings and pre-wedding shoots each open on their own, so asking to
+         see all of one does not quietly unfold the other. */
+      grid.querySelectorAll("[data-show-all]").forEach((more) => {
         more.addEventListener("click", () => {
-          grid.querySelectorAll(".wcard.later").forEach((c) => c.classList.remove("later"));
-          more.parentNode.remove();
+          const row = more.closest(".wmore");
+          const cards = row && row.previousElementSibling;
+          if (cards) cards.querySelectorAll(".wcard.later").forEach((c) => c.classList.remove("later"));
+          if (row) row.remove();
         });
-      }
+      });
     }
   }
 
