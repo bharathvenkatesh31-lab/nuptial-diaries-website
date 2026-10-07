@@ -90,6 +90,16 @@
   .acts button{flex:1;font:inherit;font-size:11px;border:0;padding:6px 2px;background:rgba(28,26,23,.82);color:#fff;cursor:pointer}
   .acts button:hover{background:var(--gold)}
   .empty-state{padding:60px 22px;color:var(--muted)}
+  /* Touch needs this, or a drag scrolls the list instead of moving a photograph. */
+  .ph{touch-action:none;-webkit-user-select:none;user-select:none}
+  body.dragging{cursor:grabbing}
+  body.dragging .ph{cursor:grabbing}
+  /* Where they will land, and what is being carried. */
+  #dropline{position:fixed;display:none;width:3px;background:var(--gold);border-radius:2px;
+            z-index:50;pointer-events:none;box-shadow:0 0 0 1px rgba(255,255,255,.6)}
+  #ghost{position:fixed;display:none;z-index:51;pointer-events:none;background:var(--ink);color:#fff;
+         font-size:12px;letter-spacing:.04em;padding:6px 11px;border-radius:3px;white-space:nowrap;
+         box-shadow:0 8px 20px -8px rgba(0,0,0,.5)}
 </style>
 </head>
 <body>
@@ -123,10 +133,14 @@
       Hover one to make it the cover, or to use it as one of the two small pictures
       under the cover on the Photography page.<br><br>
       <b>To move several at once:</b> click them to tick them — shift-click to tick a
-      whole run — then drag any ticked photograph, and they all travel together.</p></div>
+      whole run — then drag any ticked photograph and they all travel together. A gold
+      line shows where they will land, and the list scrolls when you drag to the
+      top or bottom edge.</p></div>
   </div>
   <div class="grid" id="grid"><p class="empty-state">Pick an album on the left.</p></div>
 </main>
+<div id="dropline"></div>
+<div id="ghost"></div>
 
 <script>
 const $ = (s) => document.querySelector(s);
@@ -192,7 +206,7 @@ function draw() {
 
   $("#grid").innerHTML = album.photos.map((src, i) => {
     const isC = src === cover, isP = album.previews.includes(src), isS = picked.has(src);
-    return `<div class="ph ${isS ? "sel" : ""} ${isC && !isS ? "is-cover" : ""} ${!isC && isP && !isS ? "is-prev" : ""}" draggable="true" data-i="${i}">
+    return `<div class="ph ${isS ? "sel" : ""} ${isC && !isS ? "is-cover" : ""} ${!isC && isP && !isS ? "is-prev" : ""}" data-i="${i}">
       <img ${img(src)} alt="" loading="lazy">
       <span class="n">${i + 1}</span>
       <span class="pick"></span>
@@ -211,50 +225,109 @@ function draw() {
   $("#bulkN").textContent = picked.size + (picked.size === 1 ? " photograph ticked" : " photographs ticked");
 }
 
-/* -------------------------------------------------------------- dragging */
+/* ------------------------------------------- picking photographs up and moving them
+   Dragging is done with pointer events rather than the browser's own drag, so
+   that a group can be carried, so there is a line showing exactly where they
+   will land, and so the list scrolls when you reach the edge of it. */
 const grid = $("#grid");
-grid.addEventListener("dragstart", (e) => {
+let drag = null, edgeTimer = null;
+
+const tiles = () => [...grid.querySelectorAll(".ph")];
+
+/* The position they would land in if let go here: the first photograph the
+   pointer has not yet gone past. */
+function insertAt(x, y) {
+  const t = tiles();
+  for (let i = 0; i < t.length; i++) {
+    const r = t[i].getBoundingClientRect();
+    if (y < r.bottom && x < r.left + r.width / 2) return i;
+  }
+  return t.length;
+}
+
+function showLine(i) {
+  const line = $("#dropline"), t = tiles();
+  if (!t.length) return;
+  const last = i >= t.length;
+  const r = (last ? t[t.length - 1] : t[i]).getBoundingClientRect();
+  line.style.display = "block";
+  line.style.top = r.top + "px";
+  line.style.height = r.height + "px";
+  line.style.left = (last ? r.right + 4 : r.left - 8) + "px";
+}
+
+function carry(n, x, y) {
+  const g = $("#ghost");
+  g.style.display = "block";
+  g.style.left = (x + 14) + "px";
+  g.style.top = (y + 14) + "px";
+  g.textContent = n === 1 ? "Moving 1 photograph" : `Moving ${n} photographs`;
+}
+
+/* Near the top or bottom of the list, keep scrolling while the pointer is held
+   there — ninety-five photographs do not fit on a screen. */
+function watchEdges(y) {
+  clearInterval(edgeTimer);
+  const r = grid.getBoundingClientRect();
+  const up = y < r.top + 70, down = y > r.bottom - 70;
+  if (!up && !down) return;
+  edgeTimer = setInterval(() => { grid.scrollTop += up ? -18 : 18; }, 16);
+}
+
+grid.addEventListener("pointerdown", (e) => {
+  if (e.button !== 0 || e.target.closest("button")) return;
   const ph = e.target.closest(".ph"); if (!ph) return;
-  dragFrom = +ph.dataset.i; ph.classList.add("drag");
-  e.dataTransfer.effectAllowed = "move";
-  e.dataTransfer.setData("text/plain", String(dragFrom));
-});
-grid.addEventListener("dragend", () => {
-  dragFrom = null;
-  grid.querySelectorAll(".drag,.over").forEach((n) => n.classList.remove("drag", "over"));
-});
-grid.addEventListener("dragover", (e) => {
-  const ph = e.target.closest(".ph"); if (!ph || dragFrom === null) return;
-  e.preventDefault();
-  grid.querySelectorAll(".over").forEach((n) => n.classList.remove("over"));
-  ph.classList.add("over");
-});
-grid.addEventListener("drop", (e) => {
-  const ph = e.target.closest(".ph"); if (!ph || dragFrom === null) return;
-  e.preventDefault();
-  moveGroup(album.photos[dragFrom], album.photos[+ph.dataset.i]);
+  drag = { i: +ph.dataset.i, src: album.photos[+ph.dataset.i],
+           x: e.clientX, y: e.clientY, shift: e.shiftKey, moved: false };
 });
 
-/* Moves either the one photograph being dragged, or — if it is ticked — every
-   ticked photograph, keeping the order they were already in. They land in
-   front of whatever they were dropped on. */
-function moveGroup(dragged, target) {
-  const group = picked.has(dragged) && picked.size > 1
-    ? album.photos.filter((p) => picked.has(p))
-    : [dragged];
-  if (group.includes(target)) return;                 // dropped on itself
-  const rest = album.photos.filter((p) => !group.includes(p));
-  const at = target === null ? rest.length : rest.indexOf(target);
-  album.photos = rest.slice(0, at).concat(group, rest.slice(at));
+window.addEventListener("pointermove", (e) => {
+  if (!drag) return;
+  if (!drag.moved) {
+    if (Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y) < 5) return;
+    drag.moved = true;
+    /* Carry every ticked photograph if the one picked up is ticked. */
+    drag.group = picked.has(drag.src) && picked.size > 1
+      ? album.photos.filter((p) => picked.has(p))
+      : [drag.src];
+    document.body.classList.add("dragging");
+  }
+  e.preventDefault();
+  carry(drag.group.length, e.clientX, e.clientY);
+  watchEdges(e.clientY);
+  drag.at = insertAt(e.clientX, e.clientY);
+  showLine(drag.at);
+});
+
+window.addEventListener("pointerup", () => {
+  if (!drag) return;
+  const d = drag; drag = null;
+  clearInterval(edgeTimer);
+  $("#ghost").style.display = "none";
+  $("#dropline").style.display = "none";
+  document.body.classList.remove("dragging");
+
+  if (!d.moved) return tick(d.i, d.shift);       // a plain click ticks it instead
+  dropAt(d.at, d.group);
   draw();
+});
+
+/* Puts the group in front of whatever was under the pointer, keeping the order
+   they were already in. */
+function dropAt(idx, group) {
+  const rest = album.photos.filter((p) => !group.includes(p));
+  let anchor = null;
+  for (let k = idx; k < album.photos.length; k++) {
+    if (!group.includes(album.photos[k])) { anchor = album.photos[k]; break; }
+  }
+  const at = anchor === null ? rest.length : rest.indexOf(anchor);
+  album.photos = rest.slice(0, at).concat(group, rest.slice(at));
 }
 
 /* ------------------------------------------------------------ ticking them */
-grid.addEventListener("click", (e) => {
-  if (e.target.closest("button[data-act]")) return;   // the three hover buttons
-  const ph = e.target.closest(".ph"); if (!ph) return;
-  const i = +ph.dataset.i, src = album.photos[i];
-  if (e.shiftKey && lastClicked > -1) {
+function tick(i, shiftHeld) {
+  const src = album.photos[i];
+  if (shiftHeld && lastClicked > -1) {
     const [a, b] = [Math.min(lastClicked, i), Math.max(lastClicked, i)];
     for (let k = a; k <= b; k++) picked.add(album.photos[k]);
   } else {
@@ -262,7 +335,7 @@ grid.addEventListener("click", (e) => {
     lastClicked = i;
   }
   draw();
-});
+}
 
 $("#bulk").addEventListener("click", (e) => {
   const b = e.target.closest("button[data-bulk]"); if (!b) return;
