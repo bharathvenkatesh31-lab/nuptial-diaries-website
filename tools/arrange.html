@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arrange photographs — Nuptial Diaries</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#1c1a17;--muted:#8a847c;--line:rgba(28,26,23,.12);--ivory:#f6f5f2;--gold:#a98a57;--panel:#fff}
+  *{box-sizing:border-box}
+  body{margin:0;font:300 15px/1.6 Jost,system-ui,sans-serif;color:var(--ink);background:var(--ivory);
+       display:grid;grid-template-columns:300px 1fr;height:100vh;overflow:hidden}
+
+  /* ------------------------------------------------- the list of albums */
+  .side{border-right:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-height:0}
+  .side h1{font-size:13px;letter-spacing:.18em;text-transform:uppercase;margin:0;padding:18px 18px 10px;color:var(--muted);font-weight:400}
+  .search{margin:0 14px 10px;padding:9px 12px;border:1px solid var(--line);border-radius:3px;font:inherit;background:#fff}
+  .albums{overflow:auto;flex:1;padding:0 8px 16px}
+  .alb{display:flex;gap:10px;align-items:center;width:100%;text-align:left;padding:7px 8px;border:0;border-radius:4px;
+       background:none;cursor:pointer;font:inherit;color:inherit}
+  .alb:hover{background:#f2f0ec}
+  .alb[aria-current="true"]{background:#efe9df;box-shadow:inset 2px 0 0 var(--gold)}
+  .alb img{width:46px;height:46px;object-fit:cover;border-radius:3px;flex:0 0 auto;background:#e6e3de}
+  .alb b{font-weight:400;display:block;line-height:1.3}
+  .alb small{color:var(--muted);font-size:12px}
+
+  /* ------------------------------------------------------- the main area */
+  .main{display:flex;flex-direction:column;min-height:0;min-width:0}
+  .bar{display:flex;align-items:center;gap:14px;padding:14px 22px;border-bottom:1px solid var(--line);background:var(--panel);flex-wrap:wrap}
+  .bar h2{margin:0;font-weight:400;font-size:20px}
+  .bar .kind{color:var(--muted);font-size:13px}
+  .spacer{flex:1}
+  button.act{font:inherit;border:1px solid var(--line);background:#fff;border-radius:3px;padding:8px 16px;cursor:pointer;letter-spacing:.04em}
+  button.act:hover:not(:disabled){border-color:var(--gold);color:var(--gold)}
+  button.act:disabled{opacity:.45;cursor:default}
+  button.save{background:var(--ink);color:#fff;border-color:var(--ink)}
+  button.save:hover:not(:disabled){background:var(--gold);border-color:var(--gold);color:#fff}
+
+  .say{padding:10px 22px;font-size:14px;border-bottom:1px solid var(--line)}
+  .say.ok{background:#eef3ec;color:#2f5d3a}
+  .say.bad{background:#fbeceb;color:#9d3328}
+  .say.busy{background:#f4f1ea;color:#6d675f}
+  .say[hidden]{display:none}
+
+  .card{display:flex;gap:14px;align-items:flex-start;padding:16px 22px;border-bottom:1px solid var(--line);background:var(--panel)}
+  .card .lbl{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+  .card .cov img{width:150px;height:150px;object-fit:cover;border-radius:3px;display:block;background:#e6e3de}
+  .card .pv{display:flex;gap:8px}
+  .card .pv img{width:71px;height:71px;object-fit:cover;border-radius:3px;display:block;background:#e6e3de}
+  .card .pv .empty{width:71px;height:71px;border:1px dashed var(--line);border-radius:3px;display:flex;align-items:center;
+                   justify-content:center;color:var(--muted);font-size:11px;text-align:center;padding:4px}
+  .hint{color:var(--muted);font-size:13px;max-width:420px;margin:0}
+
+  .grid{flex:1;overflow:auto;padding:18px 22px 60px;display:grid;
+        grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:12px;align-content:start}
+  .ph{position:relative;border-radius:3px;overflow:hidden;cursor:grab;background:#e6e3de;aspect-ratio:1;
+      box-shadow:0 0 0 1px var(--line)}
+  .ph img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+  .ph .n{position:absolute;left:5px;top:5px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;
+         padding:1px 6px;border-radius:2px}
+  .ph.drag{opacity:.35}
+  .ph.over{box-shadow:0 0 0 2px var(--gold)}
+  .ph.is-cover{box-shadow:0 0 0 3px var(--gold)}
+  .ph.is-prev{box-shadow:0 0 0 3px #5b7f9a}
+  .tags{position:absolute;right:5px;top:5px;display:flex;gap:4px}
+  .tag{font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;border-radius:2px;color:#fff}
+  .tag.c{background:var(--gold)} .tag.p{background:#5b7f9a}
+  .acts{position:absolute;left:0;right:0;bottom:0;display:flex;opacity:0;transition:opacity .15s}
+  .ph:hover .acts{opacity:1}
+  .acts button{flex:1;font:inherit;font-size:11px;border:0;padding:6px 2px;background:rgba(28,26,23,.82);color:#fff;cursor:pointer}
+  .acts button:hover{background:var(--gold)}
+  .empty-state{padding:60px 22px;color:var(--muted)}
+</style>
+</head>
+<body>
+<aside class="side">
+  <h1>Albums</h1>
+  <input class="search" type="search" placeholder="Search couples…" aria-label="Search albums">
+  <div class="albums" id="albums"></div>
+</aside>
+
+<main class="main">
+  <div class="bar">
+    <h2 id="title">Choose an album</h2>
+    <span class="kind" id="kind"></span>
+    <span class="spacer"></span>
+    <button class="act" id="undo" disabled>Undo changes</button>
+    <button class="act save" id="save" disabled>Save this album</button>
+  </div>
+  <p class="say" id="say" hidden></p>
+  <div class="card" id="card" hidden>
+    <div class="cov"><p class="lbl">Cover</p><img id="coverImg" alt=""></div>
+    <div><p class="lbl">The two below it</p><div class="pv" id="prevWrap"></div></div>
+    <div><p class="lbl">How this works</p>
+      <p class="hint">Drag any photograph to move it. The first one is where the album opens.
+      Hover a photograph to make it the cover, or to use it as one of the two small
+      pictures under the cover on the Photography page.</p></div>
+  </div>
+  <div class="grid" id="grid"><p class="empty-state">Pick an album on the left.</p></div>
+</main>
+
+<script>
+const $ = (s) => document.querySelector(s);
+let list = [], album = null, original = null, dragFrom = null;
+
+const say = (text, kind) => {
+  const el = $("#say");
+  if (!text) { el.hidden = true; return; }
+  el.hidden = false; el.textContent = text; el.className = "say " + (kind || "busy");
+};
+
+/* Photographs are stored at full size; the small copy sits in a thumb folder
+   beside them, and that is what this page loads. */
+const thumb = (src) => String(src).replace(/\/([^/]+)$/, "/thumb/$1");
+
+async function loadAlbums() {
+  try {
+    list = await (await fetch("/api/albums")).json();
+    drawAlbums("");
+  } catch (e) { say("Could not read the albums: " + e.message, "bad"); }
+}
+
+function drawAlbums(filter) {
+  const f = filter.trim().toLowerCase();
+  const shown = list.filter((a) => !f || a.name.toLowerCase().includes(f));
+  $("#albums").innerHTML = shown.map((a) =>
+    `<button class="alb" data-slug="${a.slug}" ${album && album.slug === a.slug ? 'aria-current="true"' : ""}>
+       <img src="${thumb(a.cover)}" alt="" loading="lazy">
+       <span><b>${a.name}</b><small>${a.kind} · ${a.count} photographs</small></span>
+     </button>`).join("") || '<p class="empty-state">Nothing matches that.</p>';
+}
+
+async function open(slug) {
+  say("Opening…", "busy");
+  try {
+    album = await (await fetch("/api/album?slug=" + encodeURIComponent(slug))).json();
+    if (album.error) throw new Error(album.error);
+    original = JSON.stringify(album);
+    $("#title").textContent = album.name;
+    $("#kind").textContent = album.kind + " · " + album.photos.length + " photographs";
+    $("#card").hidden = false;
+    drawAlbums($(".search").value);
+    draw();
+    say("");
+  } catch (e) { say("Could not open that album: " + e.message, "bad"); }
+}
+
+function dirty() { return original && JSON.stringify(album) !== original; }
+
+function draw() {
+  const cover = album.cover || album.photos[0];
+  $("#coverImg").src = thumb(cover);
+  $("#prevWrap").innerHTML = [0, 1].map((i) => album.previews[i]
+    ? `<img src="${thumb(album.previews[i])}" alt="">`
+    : `<span class="empty">not chosen</span>`).join("");
+
+  $("#grid").innerHTML = album.photos.map((src, i) => {
+    const isC = src === cover, isP = album.previews.includes(src);
+    return `<div class="ph ${isC ? "is-cover" : ""} ${!isC && isP ? "is-prev" : ""}" draggable="true" data-i="${i}">
+      <img src="${thumb(src)}" alt="" loading="lazy">
+      <span class="n">${i + 1}</span>
+      <span class="tags">${isC ? '<span class="tag c">Cover</span>' : ""}${isP ? '<span class="tag p">Small</span>' : ""}</span>
+      <span class="acts">
+        <button data-act="cover" data-i="${i}">Cover</button>
+        <button data-act="prev" data-i="${i}">${isP ? "Remove" : "Small"}</button>
+        <button data-act="first" data-i="${i}">To front</button>
+      </span>
+    </div>`;
+  }).join("");
+
+  $("#save").disabled = !dirty();
+  $("#undo").disabled = !dirty();
+}
+
+/* -------------------------------------------------------------- dragging */
+const grid = $("#grid");
+grid.addEventListener("dragstart", (e) => {
+  const ph = e.target.closest(".ph"); if (!ph) return;
+  dragFrom = +ph.dataset.i; ph.classList.add("drag");
+  e.dataTransfer.effectAllowed = "move";
+  e.dataTransfer.setData("text/plain", String(dragFrom));
+});
+grid.addEventListener("dragend", () => {
+  dragFrom = null;
+  grid.querySelectorAll(".drag,.over").forEach((n) => n.classList.remove("drag", "over"));
+});
+grid.addEventListener("dragover", (e) => {
+  const ph = e.target.closest(".ph"); if (!ph || dragFrom === null) return;
+  e.preventDefault();
+  grid.querySelectorAll(".over").forEach((n) => n.classList.remove("over"));
+  ph.classList.add("over");
+});
+grid.addEventListener("drop", (e) => {
+  const ph = e.target.closest(".ph"); if (!ph || dragFrom === null) return;
+  e.preventDefault();
+  const to = +ph.dataset.i;
+  if (to !== dragFrom) {
+    const moved = album.photos.splice(dragFrom, 1)[0];
+    album.photos.splice(to, 0, moved);
+    draw();
+  }
+});
+
+/* ------------------------------------------------------- the three buttons */
+grid.addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-act]"); if (!b) return;
+  const src = album.photos[+b.dataset.i];
+  if (b.dataset.act === "cover") album.cover = src;
+  if (b.dataset.act === "first") {
+    album.photos.splice(album.photos.indexOf(src), 1);
+    album.photos.unshift(src);
+  }
+  if (b.dataset.act === "prev") {
+    const at = album.previews.indexOf(src);
+    if (at > -1) album.previews.splice(at, 1);
+    else if (album.previews.length >= 2) {
+      say("Two small photographs is the most the card has room for. Remove one first.", "bad");
+      return;
+    } else album.previews.push(src);
+  }
+  say("");
+  draw();
+});
+
+$("#albums").addEventListener("click", (e) => {
+  const b = e.target.closest(".alb"); if (!b) return;
+  if (dirty() && !confirm("This album has changes that are not saved. Leave them?")) return;
+  open(b.dataset.slug);
+});
+$(".search").addEventListener("input", (e) => drawAlbums(e.target.value));
+$("#undo").addEventListener("click", () => { album = JSON.parse(original); draw(); say("Back to the saved version.", "ok"); });
+
+$("#save").addEventListener("click", async () => {
+  $("#save").disabled = true;
+  say("Saving…", "busy");
+  try {
+    const r = await fetch("/api/album", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug: album.slug, photos: album.photos, cover: album.cover, previews: album.previews }),
+    });
+    const out = await r.json();
+    if (!r.ok || out.error) throw new Error(out.error || ("the server said " + r.status));
+    original = JSON.stringify(album);
+    const pv = out.previews.length ? "two small photographs chosen" : "no small photographs chosen yet";
+    say(`Saved. ${out.name}: ${out.count} photographs in this order, cover set, ${pv}. Publish when you are ready.`, "ok");
+    const a = list.find((x) => x.slug === album.slug);
+    if (a) { a.cover = out.cover; drawAlbums($(".search").value); }
+  } catch (e) {
+    say("Not saved — " + e.message, "bad");
+  }
+  draw();
+});
+
+window.addEventListener("beforeunload", (e) => { if (dirty()) { e.preventDefault(); e.returnValue = ""; } });
+loadAlbums();
+</script>
+</body>
+</html>
