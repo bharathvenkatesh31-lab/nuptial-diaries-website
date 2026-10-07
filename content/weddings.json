@@ -49,15 +49,15 @@
       "pull": "",
       "city": "",
       "previews": [
-        "images/uploads/vin09601.jpg",
-        "images/uploads/vin09671.jpg"
+        "/images/uploads/vin09601.webp",
+        "/images/uploads/vin09671.webp"
       ],
       "name": "Amrit & Melissa",
       "slug": "amrit-melissa",
       "date": "",
       "kind": "Wedding",
       "story": "",
-      "cover": "images/uploads/vin09823.jpg",
+      "cover": "/images/uploads/vin09823.webp",
       "events": ""
     },
     {
@@ -162,15 +162,15 @@
       "pull": "",
       "city": "",
       "previews": [
-        "images/uploads/vin08033.jpg",
-        "images/uploads/abi01208.jpg"
+        "/images/uploads/vin08033.webp",
+        "/images/uploads/abi01208.webp"
       ],
       "name": "Avinash & Hamsa",
       "slug": "avinash-hamsa",
       "date": "",
       "kind": "Wedding",
       "story": "",
-      "cover": "images/uploads/abi03285.jpg",
+      "cover": "/images/uploads/abi03285.webp",
       "events": ""
     },
     {

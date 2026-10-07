@@ -11,8 +11,8 @@
   "statement": {
     "line1": "You will miss most",
     "line2": "of your *own* wedding.",
-    "leftImage": "/images/uploads/abi09488.jpg",
-    "rightImage": "/images/uploads/vin09311.jpg",
+    "leftImage": "/images/uploads/abi09488.webp",
+    "rightImage": "/images/uploads/vin09311.webp",
     "body": "You will be seated, garlanded and moved from one ritual to the next, while an uncle tells the story again across the hall, your mother fixes something on your shoulder without being asked, and your brother finally lets himself cry.\n\nThat is the half we are there for. We stay near enough to catch it and quiet enough that nobody straightens up as we pass — so what you are handed back is the day itself, not a record of people waiting for a photographer. Years from now it will be the only place some of these faces are still laughing like this."
   },
   "wall": {
@@ -108,7 +108,7 @@
         }
       },
       {
-        "image": "images/uploads/vin03453.jpg",
+        "image": "/images/uploads/vin03453.webp",
         "blackAndWhite": false,
         "focus": {
           "x": 73,

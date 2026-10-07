@@ -112,8 +112,12 @@ const say = (text, kind) => {
 };
 
 /* Photographs are stored at full size; the small copy sits in a thumb folder
-   beside them, and that is what this page loads. */
+   beside them, and that is what this page loads. A photograph uploaded through
+   the editor has no small copy, so those fall back to the full file rather
+   than leaving a hole where a picture should be. */
 const thumb = (src) => String(src).replace(/\/([^/]+)$/, "/thumb/$1");
+const img = (src) =>
+  `src="${thumb(src)}" data-full="${src}" onerror="this.onerror=null;this.src=this.dataset.full"`;
 
 async function loadAlbums() {
   try {
@@ -127,7 +131,7 @@ function drawAlbums(filter) {
   const shown = list.filter((a) => !f || a.name.toLowerCase().includes(f));
   $("#albums").innerHTML = shown.map((a) =>
     `<button class="alb" data-slug="${a.slug}" ${album && album.slug === a.slug ? 'aria-current="true"' : ""}>
-       <img src="${thumb(a.cover)}" alt="" loading="lazy">
+       <img ${img(a.cover)} alt="" loading="lazy">
        <span><b>${a.name}</b><small>${a.kind} · ${a.count} photographs</small></span>
      </button>`).join("") || '<p class="empty-state">Nothing matches that.</p>';
 }
@@ -151,15 +155,15 @@ function dirty() { return original && JSON.stringify(album) !== original; }
 
 function draw() {
   const cover = album.cover || album.photos[0];
-  $("#coverImg").src = thumb(cover);
+  $("#coverImg").outerHTML = `<img id="coverImg" ${img(cover)} alt="">`;
   $("#prevWrap").innerHTML = [0, 1].map((i) => album.previews[i]
-    ? `<img src="${thumb(album.previews[i])}" alt="">`
+    ? `<img ${img(album.previews[i])} alt="">`
     : `<span class="empty">not chosen</span>`).join("");
 
   $("#grid").innerHTML = album.photos.map((src, i) => {
     const isC = src === cover, isP = album.previews.includes(src);
     return `<div class="ph ${isC ? "is-cover" : ""} ${!isC && isP ? "is-prev" : ""}" draggable="true" data-i="${i}">
-      <img src="${thumb(src)}" alt="" loading="lazy">
+      <img ${img(src)} alt="" loading="lazy">
       <span class="n">${i + 1}</span>
       <span class="tags">${isC ? '<span class="tag c">Cover</span>' : ""}${isP ? '<span class="tag p">Small</span>' : ""}</span>
       <span class="acts">
