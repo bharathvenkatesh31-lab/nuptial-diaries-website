@@ -54,16 +54,34 @@
   .hint{color:var(--muted);font-size:13px;max-width:420px;margin:0}
 
   .grid{flex:1;overflow:auto;padding:18px 22px 60px;display:grid;
-        grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:12px;align-content:start}
-  .ph{position:relative;border-radius:3px;overflow:hidden;cursor:grab;background:#e6e3de;aspect-ratio:1;
-      box-shadow:0 0 0 1px var(--line)}
-  .ph img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+        grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:12px;
+        align-content:start;align-items:start}
+  /* The square is made by padding, not by aspect-ratio. A percentage padding
+     measures against the column's own width, which the grid has already
+     decided, so the box cannot be flattened. aspect-ratio was being ignored
+     when the grid worked out its row heights, which left every photograph
+     showing as a thin slice on a wide screen. align-items:start keeps the
+     grid from stretching the box back out again. */
+  .ph{position:relative;height:0;padding-bottom:100%;border-radius:3px;overflow:hidden;
+      cursor:grab;background:#e6e3de;box-shadow:0 0 0 1px var(--line)}
+  .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
   .ph .n{position:absolute;left:5px;top:5px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;
          padding:1px 6px;border-radius:2px}
   .ph.drag{opacity:.35}
   .ph.over{box-shadow:0 0 0 2px var(--gold)}
   .ph.is-cover{box-shadow:0 0 0 3px var(--gold)}
   .ph.is-prev{box-shadow:0 0 0 3px #5b7f9a}
+  .ph.sel{box-shadow:0 0 0 3px #2f6f4f}
+  .ph.sel::after{content:"";position:absolute;inset:0;background:rgba(47,111,79,.22)}
+  .ph .pick{position:absolute;left:5px;bottom:5px;width:18px;height:18px;border-radius:50%;
+            border:2px solid #fff;background:rgba(0,0,0,.35);z-index:2}
+  .ph.sel .pick{background:#2f6f4f}
+  .bulk{display:flex;align-items:center;gap:10px;padding:10px 22px;background:#eef3ec;color:#2f5d3a;
+        border-bottom:1px solid var(--line);font-size:14px}
+  .bulk[hidden]{display:none}
+  .bulk button{font:inherit;font-size:13px;border:1px solid rgba(47,93,58,.3);background:#fff;
+               border-radius:3px;padding:5px 12px;cursor:pointer;color:#2f5d3a}
+  .bulk button:hover{border-color:#2f6f4f}
   .tags{position:absolute;right:5px;top:5px;display:flex;gap:4px}
   .tag{font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;border-radius:2px;color:#fff}
   .tag.c{background:var(--gold)} .tag.p{background:#5b7f9a}
@@ -90,13 +108,22 @@
     <button class="act save" id="save" disabled>Save this album</button>
   </div>
   <p class="say" id="say" hidden></p>
+  <div class="bulk" id="bulk" hidden>
+    <strong id="bulkN"></strong>
+    <span>— drag any one of them to move the whole group, or</span>
+    <button data-bulk="front">Move to front</button>
+    <button data-bulk="end">Move to end</button>
+    <button data-bulk="none">Clear</button>
+  </div>
   <div class="card" id="card" hidden>
     <div class="cov"><p class="lbl">Cover</p><img id="coverImg" alt=""></div>
     <div><p class="lbl">The two below it</p><div class="pv" id="prevWrap"></div></div>
     <div><p class="lbl">How this works</p>
       <p class="hint">Drag any photograph to move it. The first one is where the album opens.
-      Hover a photograph to make it the cover, or to use it as one of the two small
-      pictures under the cover on the Photography page.</p></div>
+      Hover one to make it the cover, or to use it as one of the two small pictures
+      under the cover on the Photography page.<br><br>
+      <b>To move several at once:</b> click them to tick them — shift-click to tick a
+      whole run — then drag any ticked photograph, and they all travel together.</p></div>
   </div>
   <div class="grid" id="grid"><p class="empty-state">Pick an album on the left.</p></div>
 </main>
@@ -104,6 +131,8 @@
 <script>
 const $ = (s) => document.querySelector(s);
 let list = [], album = null, original = null, dragFrom = null;
+/* Ticked photographs, held by address so they stay ticked as things move. */
+let picked = new Set(), lastClicked = -1;
 
 const say = (text, kind) => {
   const el = $("#say");
@@ -142,6 +171,7 @@ async function open(slug) {
     album = await (await fetch("/api/album?slug=" + encodeURIComponent(slug))).json();
     if (album.error) throw new Error(album.error);
     original = JSON.stringify(album);
+    picked.clear(); lastClicked = -1;
     $("#title").textContent = album.name;
     $("#kind").textContent = album.kind + " · " + album.photos.length + " photographs";
     $("#card").hidden = false;
@@ -161,10 +191,11 @@ function draw() {
     : `<span class="empty">not chosen</span>`).join("");
 
   $("#grid").innerHTML = album.photos.map((src, i) => {
-    const isC = src === cover, isP = album.previews.includes(src);
-    return `<div class="ph ${isC ? "is-cover" : ""} ${!isC && isP ? "is-prev" : ""}" draggable="true" data-i="${i}">
+    const isC = src === cover, isP = album.previews.includes(src), isS = picked.has(src);
+    return `<div class="ph ${isS ? "sel" : ""} ${isC && !isS ? "is-cover" : ""} ${!isC && isP && !isS ? "is-prev" : ""}" draggable="true" data-i="${i}">
       <img ${img(src)} alt="" loading="lazy">
       <span class="n">${i + 1}</span>
+      <span class="pick"></span>
       <span class="tags">${isC ? '<span class="tag c">Cover</span>' : ""}${isP ? '<span class="tag p">Small</span>' : ""}</span>
       <span class="acts">
         <button data-act="cover" data-i="${i}">Cover</button>
@@ -176,6 +207,8 @@ function draw() {
 
   $("#save").disabled = !dirty();
   $("#undo").disabled = !dirty();
+  $("#bulk").hidden = picked.size === 0;
+  $("#bulkN").textContent = picked.size + (picked.size === 1 ? " photograph ticked" : " photographs ticked");
 }
 
 /* -------------------------------------------------------------- dragging */
@@ -199,12 +232,46 @@ grid.addEventListener("dragover", (e) => {
 grid.addEventListener("drop", (e) => {
   const ph = e.target.closest(".ph"); if (!ph || dragFrom === null) return;
   e.preventDefault();
-  const to = +ph.dataset.i;
-  if (to !== dragFrom) {
-    const moved = album.photos.splice(dragFrom, 1)[0];
-    album.photos.splice(to, 0, moved);
-    draw();
+  moveGroup(album.photos[dragFrom], album.photos[+ph.dataset.i]);
+});
+
+/* Moves either the one photograph being dragged, or — if it is ticked — every
+   ticked photograph, keeping the order they were already in. They land in
+   front of whatever they were dropped on. */
+function moveGroup(dragged, target) {
+  const group = picked.has(dragged) && picked.size > 1
+    ? album.photos.filter((p) => picked.has(p))
+    : [dragged];
+  if (group.includes(target)) return;                 // dropped on itself
+  const rest = album.photos.filter((p) => !group.includes(p));
+  const at = target === null ? rest.length : rest.indexOf(target);
+  album.photos = rest.slice(0, at).concat(group, rest.slice(at));
+  draw();
+}
+
+/* ------------------------------------------------------------ ticking them */
+grid.addEventListener("click", (e) => {
+  if (e.target.closest("button[data-act]")) return;   // the three hover buttons
+  const ph = e.target.closest(".ph"); if (!ph) return;
+  const i = +ph.dataset.i, src = album.photos[i];
+  if (e.shiftKey && lastClicked > -1) {
+    const [a, b] = [Math.min(lastClicked, i), Math.max(lastClicked, i)];
+    for (let k = a; k <= b; k++) picked.add(album.photos[k]);
+  } else {
+    picked.has(src) ? picked.delete(src) : picked.add(src);
+    lastClicked = i;
   }
+  draw();
+});
+
+$("#bulk").addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-bulk]"); if (!b) return;
+  const what = b.dataset.bulk;
+  if (what === "none") { picked.clear(); lastClicked = -1; return draw(); }
+  const group = album.photos.filter((p) => picked.has(p));
+  const rest = album.photos.filter((p) => !picked.has(p));
+  album.photos = what === "front" ? group.concat(rest) : rest.concat(group);
+  draw();
 });
 
 /* ------------------------------------------------------- the three buttons */
