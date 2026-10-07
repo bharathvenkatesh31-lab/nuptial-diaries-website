@@ -51,6 +51,13 @@
   .card .pv img{width:71px;height:71px;object-fit:cover;border-radius:3px;display:block;background:#e6e3de}
   .card .pv .empty{width:71px;height:71px;border:1px dashed var(--line);border-radius:3px;display:flex;align-items:center;
                    justify-content:center;color:var(--muted);font-size:11px;text-align:center;padding:4px}
+  .slot{position:relative;display:block}
+  .slot .x{position:absolute;top:-7px;right:-7px;width:20px;height:20px;border-radius:50%;border:0;
+           background:var(--ink);color:#fff;font-size:13px;line-height:1;cursor:pointer;padding:0}
+  .slot .x:hover{background:#9d3328}
+  .mini{display:block;margin-top:8px;font:inherit;font-size:12px;border:1px solid var(--line);background:#fff;
+        border-radius:3px;padding:5px 10px;cursor:pointer;color:var(--muted)}
+  .mini:hover{border-color:var(--gold);color:var(--gold)}
   .hint{color:var(--muted);font-size:13px;max-width:420px;margin:0}
 
   .grid{flex:1;overflow:auto;padding:18px 22px 60px;display:grid;
@@ -126,12 +133,15 @@
     <button data-bulk="none">Clear</button>
   </div>
   <div class="card" id="card" hidden>
-    <div class="cov"><p class="lbl">Cover</p><img id="coverImg" alt=""></div>
+    <div class="cov"><p class="lbl">Cover</p><img id="coverImg" alt="">
+      <button class="mini" id="coverReset">Use photograph 1</button></div>
     <div><p class="lbl">The two below it</p><div class="pv" id="prevWrap"></div></div>
     <div><p class="lbl">How this works</p>
       <p class="hint">Drag any photograph to move it. The first one is where the album opens.
       Hover one to make it the cover, or to use it as one of the two small pictures
-      under the cover on the Photography page.<br><br>
+      under the cover on the Photography page. The × on a small picture takes it off
+      the card; either of them can also be a photograph you uploaded rather than one
+      from this album.<br><br>
       <b>To move several at once:</b> click them to tick them — shift-click to tick a
       whole run — then drag any ticked photograph and they all travel together. A gold
       line shows where they will land, and the list scrolls when you drag to the
@@ -201,7 +211,8 @@ function draw() {
   const cover = album.cover || album.photos[0];
   $("#coverImg").outerHTML = `<img id="coverImg" ${img(cover)} alt="">`;
   $("#prevWrap").innerHTML = [0, 1].map((i) => album.previews[i]
-    ? `<img ${img(album.previews[i])} alt="">`
+    ? `<span class="slot"><img ${img(album.previews[i])} alt="">
+         <button class="x" data-drop="${i}" title="Take this one off the card">&times;</button></span>`
     : `<span class="empty">not chosen</span>`).join("");
 
   $("#grid").innerHTML = album.photos.map((src, i) => {
@@ -337,6 +348,22 @@ function tick(i, shiftHeld) {
   draw();
 }
 
+/* Taking one of the two small photographs off the card. They can come from
+   outside the album, so there is not always a tile in the grid to use. */
+$("#prevWrap").addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-drop]"); if (!b) return;
+  album.previews.splice(+b.dataset.drop, 1);
+  say("");
+  draw();
+});
+
+$("#coverReset").addEventListener("click", () => {
+  if (!album) return;
+  album.cover = album.photos[0];
+  say("");
+  draw();
+});
+
 $("#bulk").addEventListener("click", (e) => {
   const b = e.target.closest("button[data-bulk]"); if (!b) return;
   const what = b.dataset.bulk;
@@ -360,7 +387,7 @@ grid.addEventListener("click", (e) => {
     const at = album.previews.indexOf(src);
     if (at > -1) album.previews.splice(at, 1);
     else if (album.previews.length >= 2) {
-      say("Two small photographs is the most the card has room for. Remove one first.", "bad");
+      say("The card has room for two. Take one off with the × beside it, then choose this one.", "bad");
       return;
     } else album.previews.push(src);
   }

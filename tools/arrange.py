@@ -114,11 +114,21 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send_json({"error":
                     "This would change which photographs are in the album (%d would be lost). "
                     "Nothing has been saved." % missing}, 400)
-            if cover and cover not in photos:
-                return self.send_json({"error": "That cover is not one of the album's photographs."}, 400)
-            bad = [p for p in previews if p not in photos]
-            if bad:
-                return self.send_json({"error": "Those two small photographs are not in this album."}, 400)
+            # A cover, and the two small photographs beside it, do not have to come
+            # from inside the album — one uploaded through Album Studio is a
+            # perfectly good choice. All that matters is that the file is really
+            # there, so the page cannot end up pointing at nothing.
+            def here(path):
+                full = os.path.normpath(os.path.join(ROOT, path.lstrip("/")))
+                return full.startswith(ROOT) and os.path.isfile(full)
+
+            if cover and not here(cover):
+                return self.send_json({"error":
+                    "That cover is not a photograph on this site: %s" % cover}, 400)
+            missing = [p for p in previews if not here(p)]
+            if missing:
+                return self.send_json({"error":
+                    "These are not photographs on this site: %s" % ", ".join(missing)}, 400)
             if len(previews) not in (0, 2):
                 return self.send_json({"error": "Pick exactly two small photographs, or none at all."}, 400)
 
